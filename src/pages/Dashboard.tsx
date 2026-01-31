@@ -16,9 +16,6 @@ export default function Dashboard() {
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white">
                         Global Accuracy Leaderboard
                     </h2>
-                    <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
-                        Validated by <span className="text-white font-semibold">RankandFile</span> protocol.
-                    </p>
                 </div>
             </div>
 
@@ -38,6 +35,7 @@ export default function Dashboard() {
                         <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none">Season Accuracy</h3>
                     </div>
                     <LeaderboardList
+                        key={`season-${state.positionFilter}`}
                         items={helpers.getRankings('SEASON')}
                     />
                 </div>
@@ -51,6 +49,7 @@ export default function Dashboard() {
                         <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none">Last Week</h3>
                     </div>
                     <LeaderboardList
+                        key={`week-${state.positionFilter}`}
                         items={helpers.getRankings('LAST_WEEK')}
                     />
                 </div>

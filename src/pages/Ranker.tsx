@@ -36,6 +36,8 @@ export default function Ranker() {
                 items={state.items}
                 handleReorder={actions.handleReorder}
                 isViewMode={state.isViewMode}
+                currentWeek={state.week}
+                rankingType={state.rankingType}
             />
         </motion.div>
     );
