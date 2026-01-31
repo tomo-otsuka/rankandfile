@@ -3,6 +3,10 @@ export interface Player {
     name: string;
     position: 'WR' | 'RB' | 'QB' | 'TE' | 'K' | 'DST';
     team: string;
+    // Historical performance data
+    weeklyScores?: Record<number, number>; // week number -> fantasy points
+    lastSeasonRank?: number; // Final rank in position group last season
+    currentSeasonAvg?: number; // Average fantasy points this season
 }
 
 export interface League {

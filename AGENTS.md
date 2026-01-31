@@ -30,3 +30,22 @@ This document serves as a source of truth for the design language of the Rank an
 - **CSS**: Use CSS variables for colors and spacing to ensure consistency.
 - **Tailwind**: If used, leverage `backdrop-blur`, `bg-opacity`, and ring utilities for glass effects.
 - **Icons**: Use clean, modern stroke-based icons (e.g., Lucide React, Heroicons).
+
+## Build & Deploy
+
+### Development
+```bash
+npm install    # Install dependencies
+npm run dev    # Start dev server at localhost:5173
+```
+
+### Production Build
+```bash
+npm run build  # Outputs to /docs folder
+```
+
+### GitHub Pages Deployment
+1. Run `npm run build` to generate the `/docs` folder.
+2. Commit and push the `/docs` folder to `main`.
+3. In GitHub: **Settings → Pages → Source**: `main` branch, `/docs` folder.
+4. Site deploys to: `https://<username>.github.io/rankandfile/`
