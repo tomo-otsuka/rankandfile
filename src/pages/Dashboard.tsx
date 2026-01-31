@@ -1,100 +1,60 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowUpRight, Medal } from 'lucide-react';
-import { RANKINGS, USERS, getPlayer } from '../services/mockData';
+import { motion } from 'framer-motion';
+import { Trophy, Flame } from 'lucide-react';
+import { useLeaderboard } from '../hooks/useLeaderboard';
+import { PositionPills } from '../components/dashboard/LeaderboardFilters';
+import { LeaderboardList } from '../components/dashboard/LeaderboardList';
 
 export default function Dashboard() {
-    const [positionFilter, setPositionFilter] = useState<'ALL' | 'WR' | 'RB' | 'QB'>('ALL');
-
-    const filteredRankings = RANKINGS.filter(
-        (r) => positionFilter === 'ALL' || r.position === positionFilter
-    );
+    const { state, actions, helpers } = useLeaderboard();
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Leaderboard</h2>
-                    <p className="text-muted-foreground">Top performing files by reputation score.</p>
-                </div>
-
-                <div className="flex bg-secondary/50 p-1 rounded-lg backdrop-blur-sm self-start">
-                    {['ALL', 'QB', 'RB', 'WR'].map((pos) => (
-                        <button
-                            key={pos}
-                            onClick={() => setPositionFilter(pos as any)}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${positionFilter === pos
-                                ? 'bg-background text-foreground shadow-sm'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
-                        >
-                            {pos}
-                        </button>
-                    ))}
+        <motion.div
+            className="max-w-7xl mx-auto space-y-8 pb-20 px-4 md:px-8"
+        >
+            <div className="flex flex-col gap-4 pt-6 pb-2 items-center text-center">
+                <div className="space-y-2 max-w-3xl">
+                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white">
+                        Global Accuracy Leaderboard
+                    </h2>
+                    <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
+                        Validated by <span className="text-white font-semibold">RankandFile</span> protocol.
+                    </p>
                 </div>
             </div>
 
-            <div className="grid gap-4">
-                {filteredRankings.map((ranking, index) => {
-                    const user = USERS.find((u) => u.id === ranking.userId);
-                    const topPlayer = ranking.playerIds.length > 0 ? getPlayer(ranking.playerIds[0]) : null;
+            {/* Global Position Filter */}
+            <div className="flex flex-col items-center gap-4 sticky top-20 z-40 py-4 bg-transparent backdrop-blur-xl md:backdrop-blur-none md:static md:bg-transparent -mx-4 md:mx-0">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Filter by Position</span>
+                <PositionPills positionFilter={state.positionFilter} setPositionFilter={actions.setPositionFilter} />
+            </div>
 
-                    return (
-                        <div
-                            key={ranking.id}
-                            className="group relative flex items-center justify-between p-6 rounded-xl border border-white/5 bg-card/30 backdrop-blur-sm hover:border-white/10 hover:bg-card/50 transition-all"
-                        >
-                            <div className="flex items-center gap-6">
-                                <div className="flex items-center justify-center w-8 font-mono text-xl font-bold text-muted-foreground">
-                                    {index + 1}
-                                </div>
-
-                                <div className={`w-12 h-12 rounded-full ${user?.avatar} flex items-center justify-center text-white font-bold text-lg`}>
-                                    {user?.username.charAt(0).toUpperCase()}
-                                </div>
-
-                                <div>
-                                    <h3 className="font-semibold text-lg flex items-center gap-2">
-                                        {ranking.title}
-                                        <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground font-medium">
-                                            {ranking.position}
-                                        </span>
-                                    </h3>
-                                    <div className="flex items-center text-sm text-muted-foreground gap-2">
-                                        <span>@{user?.username}</span>
-                                        <span>•</span>
-                                        <span className="flex items-center text-green-400">
-                                            <Medal className="w-3 h-3 mr-1" /> Score: {user?.reputation}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="hidden md:flex items-center gap-8 text-sm">
-                                <div className="text-right">
-                                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Top Pick</p>
-                                    <p className="font-medium">{topPlayer?.name}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Updated</p>
-                                    <p className="font-medium">{new Date(ranking.lastUpdated).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-
-                            <Link
-                                to={`/file/${ranking.id}`} // We'll implement File View later
-                                className="absolute inset-0 z-10"
-                            >
-                                <span className="sr-only">View File</span>
-                            </Link>
-
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity pr-2">
-                                <ArrowUpRight className="text-muted-foreground w-5 h-5" />
-                            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                {/* SEASON PANEL */}
+                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-white/5">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary">
+                            <Trophy className="w-4 h-4" />
                         </div>
-                    );
-                })}
+                        <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none">Season Accuracy</h3>
+                    </div>
+                    <LeaderboardList
+                        items={helpers.getRankings('SEASON')}
+                    />
+                </div>
+
+                {/* LAST WEEK PANEL */}
+                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-white/5">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/20 text-orange-500">
+                            <Flame className="w-4 h-4" />
+                        </div>
+                        <h3 className="text-lg font-black text-white uppercase tracking-tighter leading-none">Last Week</h3>
+                    </div>
+                    <LeaderboardList
+                        items={helpers.getRankings('LAST_WEEK')}
+                    />
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import Home from './pages/Home';
 import Ranker from './pages/Ranker';
 import Dashboard from './pages/Dashboard';
+import Leagues from './pages/Leagues';
 import Compare from './pages/Compare';
 
 function App() {
@@ -12,7 +13,10 @@ function App() {
                 <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/rank" element={<Ranker />} />
+                    <Route path="/rank/:rankId" element={<Ranker />} />
+
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/leagues" element={<Leagues />} />
                     <Route path="/compare" element={<Compare />} />
                 </Route>
             </Routes>

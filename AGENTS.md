@@ -21,6 +21,11 @@ This document serves as a source of truth for the design language of the Rank an
 - **Typography**: Use high-quality sans-serif fonts (e.g., Inter, system-ui). Clear hierarchy with font weights and sizes.
 - **Accessibility**: Ensure sufficient contrast, even within the glassmorphic aesthetic.
 
+## Product Principles
+> **Democratizing Analysis**: RankAndFile is for everyone, not just "experts".
+- **Tone**: Empowering, professional, accurate.
+- **Language**: Avoid "Social Credit", "Ball", or "Receipts" (too slangy). Use "Accuracy", "Validation", "Track Record", "Result-Oriented".
+
 ## Implementation Notes
 - **CSS**: Use CSS variables for colors and spacing to ensure consistency.
 - **Tailwind**: If used, leverage `backdrop-blur`, `bg-opacity`, and ring utilities for glass effects.

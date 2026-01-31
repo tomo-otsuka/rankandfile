@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { RANKINGS, USERS, getPlayer } from '../services/mockData';
 
 export default function Compare() {
@@ -13,7 +14,11 @@ export default function Compare() {
     const getRank = (playerId: string, list: string[]) => list.indexOf(playerId);
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-5xl mx-auto space-y-8"
+        >
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Compare Files</h2>
@@ -97,6 +102,6 @@ export default function Compare() {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
