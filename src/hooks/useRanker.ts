@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { PLAYERS, Player, getRanking, getUser, Position } from '../services/mockData';
 
 export type { Position } from '../services/mockData';
@@ -25,6 +25,7 @@ export interface RankerActions {
 
 export function useRanker() {
     const { rankId } = useParams();
+    const [searchParams] = useSearchParams();
     const isViewMode = !!rankId;
 
     // Default Edit Mode Initial Values
@@ -32,14 +33,25 @@ export function useRanker() {
     const defaultType: RankingType = 'SEASONAL';
     const defaultWeek = 1;
 
+    // Initial Position from URL if present
+    const initPos = (searchParams.get('pos') as Position) || defaultPos;
+
     // State
-    const [position, setPosition] = useState<Position>(defaultPos);
+    const [position, setPosition] = useState<Position>(initPos);
     const [rankingType, setRankingType] = useState<RankingType>(defaultType);
     const [week, setWeek] = useState<number>(defaultWeek);
     const [items, setItems] = useState<Player[]>([]);
     const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED'>('SAVED');
     const [viewTitle, setViewTitle] = useState<string>('');
     const [availablePositions, setAvailablePositions] = useState<Position[]>(['QB', 'RB', 'WR', 'TE', 'K', 'DST']);
+
+    // Sync position with search params when navigating between rankings
+    useEffect(() => {
+        const urlPos = searchParams.get('pos') as Position;
+        if (urlPos && isViewMode) {
+            setPosition(urlPos);
+        }
+    }, [rankId, searchParams, isViewMode]);
 
     // Load Data
     useEffect(() => {

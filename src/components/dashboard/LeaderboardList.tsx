@@ -71,8 +71,12 @@ export function LeaderboardList({ items }: LeaderboardListProps) {
                 );
 
                 if (entry.rankingId) {
+                    const linkPath = entry.position
+                        ? `/rank/${entry.rankingId}?pos=${entry.position}`
+                        : `/rank/${entry.rankingId}`;
+
                     return (
-                        <Link to={`/rank/${entry.rankingId}`} key={entry.id} className="block group min-w-0">
+                        <Link to={linkPath} key={entry.id} className="block group min-w-0">
                             {linkContent}
                         </Link>
                     );
