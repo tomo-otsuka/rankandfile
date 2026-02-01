@@ -36,10 +36,18 @@ export function useRanker() {
     // Initial Position from URL if present
     const initPos = (searchParams.get('pos') as Position) || defaultPos;
 
+    // Initial Week from URL if present
+    const urlWeek = searchParams.get('week');
+    const initWeek = urlWeek ? parseInt(urlWeek) : defaultWeek;
+
+    // Initial Type from URL if present, or implied by week
+    const urlType = searchParams.get('type') as RankingType;
+    const initType: RankingType = urlType || (urlWeek ? 'WEEKLY' : defaultType);
+
     // State
     const [position, setPosition] = useState<Position>(initPos);
-    const [rankingType, setRankingType] = useState<RankingType>(defaultType);
-    const [week, setWeek] = useState<number>(defaultWeek);
+    const [rankingType, setRankingType] = useState<RankingType>(initType);
+    const [week, setWeek] = useState<number>(initWeek);
     const [items, setItems] = useState<Player[]>([]);
     const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED'>('SAVED');
     const [viewTitle, setViewTitle] = useState<string>('');
