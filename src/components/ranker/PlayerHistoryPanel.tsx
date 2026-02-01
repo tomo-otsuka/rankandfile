@@ -154,7 +154,7 @@ export function PlayerHistoryPanel({ player, currentWeek, rankingType }: PlayerH
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="overflow-hidden"
         >
-            <div className="pt-4 mt-4 border-t border-white/10">
+            <div className="pt-3 mt-3 border-t border-white/10">
                 {!hasAnyData ? (
                     <motion.div
                         initial={shouldAnimate ? { opacity: 0 } : false}

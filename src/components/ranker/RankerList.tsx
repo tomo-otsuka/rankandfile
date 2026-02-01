@@ -31,7 +31,7 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                 axis="y"
                 values={items}
                 onReorder={handleReorder}
-                className="space-y-2"
+                className="space-y-1"
             >
                 <AnimatePresence>
                     {items.map((item, index) => {
@@ -53,21 +53,21 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                                 }}
                                 onClick={(e) => handlePlayerClick(item.id, e)}
                                 className={cn(
-                                    "relative flex flex-col p-4 rounded-xl bg-white/5 border border-white/5 transition-colors select-none group cursor-pointer",
+                                    "relative flex flex-col py-2 px-3 rounded-xl bg-white/5 border border-white/5 transition-colors select-none group cursor-pointer",
                                     !isViewMode && "hover:bg-white/10",
                                     isExpanded && "bg-white/[0.07] border-primary/20"
                                 )}
                             >
                                 {/* Main Row */}
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white/5 font-mono text-sm font-bold text-primary/60 ring-1 ring-primary/20">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center w-8 h-8 flex-shrink-0 rounded-full bg-white/5 font-mono text-xs font-bold text-primary/60 ring-1 ring-primary/20">
                                         {index + 1}
                                     </div>
 
-                                    <div className="flex-1">
-                                        <div className="flex items-baseline justify-between">
-                                            <h3 className="font-bold text-lg text-white group-hover:text-primary transition-colors italic uppercase tracking-tighter">{item.name}</h3>
-                                            <span className="text-xs font-mono font-medium text-white/40 uppercase tracking-widest">{item.team}</span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <h3 className="font-bold text-white group-hover:text-primary transition-colors truncate italic uppercase tracking-tighter">{item.name}</h3>
+                                            <span className="text-[10px] font-mono font-medium text-white/30 uppercase tracking-widest flex-shrink-0">{item.team}</span>
                                         </div>
                                     </div>
 
