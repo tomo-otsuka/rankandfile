@@ -9,6 +9,8 @@ interface RankerControlsProps {
     setRankingType: (type: RankingType) => void;
     week: number;
     setWeek: (week: number) => void;
+    isViewMode?: boolean;
+    availablePositions?: Position[];
 }
 
 export function RankerControls({
@@ -17,50 +19,63 @@ export function RankerControls({
     rankingType,
     setRankingType,
     week,
-    setWeek
+    setWeek,
+    isViewMode = false,
+    availablePositions = ['QB', 'RB', 'WR', 'TE', 'K', 'DST']
 }: RankerControlsProps) {
     return (
         <div className="flex flex-col items-end gap-3">
             <div className="flex bg-secondary/50 p-1 rounded-xl backdrop-blur-sm overflow-x-auto max-w-full scrollbar-hide border border-white/5">
                 <div className="flex items-center gap-4 px-1">
                     <div className="flex p-0.5 rounded-lg">
-                        {(['QB', 'RB', 'WR', 'TE', 'K', 'DST'] as Position[]).map((pos) => (
-                            <button
-                                key={pos}
-                                onClick={() => setPosition(pos)}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
-                                    position === pos
-                                        ? "bg-background text-foreground shadow-sm"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                {pos}
-                            </button>
-                        ))}
+                        {(['QB', 'RB', 'WR', 'TE', 'K', 'DST'] as Position[]).map((pos) => {
+                            const isAvailable = availablePositions.includes(pos);
+
+                            return (
+                                <button
+                                    key={pos}
+                                    onClick={() => isAvailable && setPosition(pos)}
+                                    disabled={!isAvailable}
+                                    className={cn(
+                                        "px-4 py-1.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
+                                        position === pos
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : isAvailable
+                                                ? "text-muted-foreground hover:text-foreground"
+                                                : "text-muted-foreground/20 cursor-not-allowed"
+                                    )}
+                                >
+                                    {pos}
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    <div className="w-[1px] h-4 bg-white/10" />
+                    {!isViewMode && (
+                        <>
+                            <div className="w-[1px] h-4 bg-white/10" />
 
-                    <div className="flex p-0.5 rounded-lg">
-                        {[
-                            { id: 'SEASONAL', label: 'Seasonal' },
-                            { id: 'WEEKLY', label: 'Weekly' }
-                        ].map((type) => (
-                            <button
-                                key={type.id}
-                                onClick={() => setRankingType(type.id as RankingType)}
-                                className={cn(
-                                    "px-4 py-1.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
-                                    rankingType === type.id
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "text-primary/40 hover:text-primary"
-                                )}
-                            >
-                                {type.label}
-                            </button>
-                        ))}
-                    </div>
+                            <div className="flex p-0.5 rounded-lg">
+                                {[
+                                    { id: 'SEASONAL', label: 'Seasonal' },
+                                    { id: 'WEEKLY', label: 'Weekly' }
+                                ].map((type) => (
+                                    <button
+                                        key={type.id}
+                                        onClick={() => setRankingType(type.id as RankingType)}
+                                        className={cn(
+                                            "px-4 py-1.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
+                                            rankingType === type.id
+                                                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                                : "text-primary/40 hover:text-primary"
+                                        )}
+                                    >
+                                        {type.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

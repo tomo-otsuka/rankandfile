@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, Calendar, Trophy, BarChart3, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Calendar, Trophy, BarChart3, Zap, ExternalLink } from 'lucide-react';
 import { Player } from '../../services/mockData';
 import { RankingType } from '../../hooks/useRanker';
 
@@ -30,8 +31,8 @@ function Sparkline({ scores, currentWeek, shouldAnimate }: { scores: Record<numb
                         animate={{ height: `${Math.max(height, 10)}%` }}
                         transition={shouldAnimate ? { delay: i * 0.04, duration: 0.25, ease: 'easeOut' } : { duration: 0 }}
                         className={`w-1.5 rounded-full ${isLatest
-                                ? 'bg-gradient-to-t from-primary to-primary/60'
-                                : 'bg-white/20'
+                            ? 'bg-gradient-to-t from-primary to-primary/60'
+                            : 'bg-white/20'
                             }`}
                         title={`Week ${weeks[i]}: ${val.toFixed(1)} pts`}
                     />
@@ -68,8 +69,8 @@ function StatCard({
             transition={shouldAnimate ? { delay: delay ?? 0, duration: 0.2, ease: 'easeOut' } : { duration: 0 }}
             whileHover={{ scale: 1.02, transition: { duration: 0.15 } }}
             className={`relative overflow-hidden rounded-xl p-3 border transition-colors cursor-default ${highlight
-                    ? 'bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 shadow-lg shadow-primary/10'
-                    : 'bg-white/5 border-white/5 hover:border-white/10 hover:bg-white/[0.07]'
+                ? 'bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 shadow-lg shadow-primary/10'
+                : 'bg-white/5 border-white/5 hover:border-white/10 hover:bg-white/[0.07]'
                 }`}
         >
             {/* Subtle glow for highlighted cards */}
@@ -83,8 +84,8 @@ function StatCard({
                     <span>{label}</span>
                     {trend && (
                         <span className={`ml-auto ${trend === 'up' ? 'text-green-400' :
-                                trend === 'down' ? 'text-red-400' :
-                                    'text-white/30'
+                            trend === 'down' ? 'text-red-400' :
+                                'text-white/30'
                             }`}>
                             {trend === 'up' && <TrendingUp className="w-3 h-3" />}
                             {trend === 'down' && <TrendingDown className="w-3 h-3" />}
@@ -220,6 +221,22 @@ export function PlayerHistoryPanel({ player, currentWeek, rankingType }: PlayerH
                                 />
                             )}
                         </div>
+
+                        {/* View Full Stats Link */}
+                        <motion.div
+                            initial={shouldAnimate ? { opacity: 0 } : false}
+                            animate={{ opacity: 1 }}
+                            transition={shouldAnimate ? { delay: 0.2 } : { duration: 0 }}
+                        >
+                            <Link
+                                to={`/player/${player.id}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-2 text-xs text-primary/70 hover:text-primary transition-colors mt-2"
+                            >
+                                <ExternalLink className="w-3 h-3" />
+                                View Full Stats
+                            </Link>
+                        </motion.div>
                     </div>
                 )}
             </div>

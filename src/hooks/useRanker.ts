@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { PLAYERS, Player, RANKINGS } from '../services/mockData';
+import { PLAYERS, Player, getRanking, getUser, Position } from '../services/mockData';
 
-export type Position = 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST';
+export type { Position } from '../services/mockData';
 export type RankingType = 'SEASONAL' | 'WEEKLY';
 
 export interface RankerState {
@@ -13,6 +13,7 @@ export interface RankerState {
     viewTitle: string;
     saveStatus: 'IDLE' | 'SAVING' | 'SAVED';
     isViewMode: boolean;
+    availablePositions: Position[];
 }
 
 export interface RankerActions {
@@ -38,19 +39,46 @@ export function useRanker() {
     const [items, setItems] = useState<Player[]>([]);
     const [saveStatus, setSaveStatus] = useState<'IDLE' | 'SAVING' | 'SAVED'>('SAVED');
     const [viewTitle, setViewTitle] = useState<string>('');
+    const [availablePositions, setAvailablePositions] = useState<Position[]>(['QB', 'RB', 'WR', 'TE', 'K', 'DST']);
 
     // Load Data
     useEffect(() => {
-        if (isViewMode) {
+        if (isViewMode && rankId) {
             // VIEW MODE: Load from global rankings
-            const ranking = RANKINGS.find(r => r.id === rankId);
+            const ranking = getRanking(rankId);
             if (ranking) {
-                setPosition(ranking.position);
-                setRankingType(ranking.type);
-                setViewTitle(ranking.title);
+                // Find first position that has rankings in this file
+                const avail = Object.keys(ranking.rankings) as Position[];
+                setAvailablePositions(avail);
 
-                // Map player IDs back to full player objects
-                const rankedPlayers = ranking.playerIds
+                // Initialize position ONLY if current position state is NOT available in this file
+                if (!ranking.rankings[position]) {
+                    const firstPos = avail[0] || 'WR';
+                    setPosition(firstPos);
+                    // Return early as the state update will trigger this effect again
+                    return;
+                }
+
+                // Sync UI state with the ranking file metadata
+                setRankingType(ranking.type);
+                if (ranking.week) setWeek(ranking.week);
+
+                // Generate view title from user's ranking
+                const user = getUser(ranking.userId);
+                const username = user ? user.username : 'User';
+                const isOverall = availablePositions.length > 2;
+                const typeStr = ranking.type === 'WEEKLY' ? 'Week ' + (ranking.week || 1) : 'Season';
+
+                if (isOverall) {
+                    setViewTitle(`${username}'s ${typeStr} Rankings`);
+                } else {
+                    const positionsStr = avail.join('/');
+                    setViewTitle(`${username}'s ${typeStr} ${positionsStr} Rankings`);
+                }
+
+                // Map player IDs for the CURRENT selected position
+                const playerIds = ranking.rankings[position] || [];
+                const rankedPlayers = playerIds
                     .map(id => PLAYERS.find(p => p.id === id))
                     .filter((p): p is Player => !!p);
 
@@ -58,9 +86,6 @@ export function useRanker() {
             }
         } else {
             // EDIT MODE: Load from local storage or default
-            // We are NOT using useLocalStorage hook for the main items state 
-            // because the key changes dynamically based on position/type/week.
-            // Instead we explicitly load/save in effects.
             const key = rankingType === 'SEASONAL'
                 ? `rankings-${position}-SEASONAL`
                 : `rankings-${position}-WEEK-${week}`;
@@ -75,6 +100,7 @@ export function useRanker() {
             }
             // Clear view title in edit mode
             setViewTitle('');
+            setAvailablePositions(['QB', 'RB', 'WR', 'TE', 'K', 'DST']);
             setSaveStatus('SAVED');
         }
     }, [position, rankingType, week, rankId, isViewMode]);
@@ -103,7 +129,8 @@ export function useRanker() {
             items,
             viewTitle,
             saveStatus,
-            isViewMode
+            isViewMode,
+            availablePositions
         },
         actions: {
             setPosition,

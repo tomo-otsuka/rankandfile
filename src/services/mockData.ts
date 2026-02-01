@@ -27,113 +27,143 @@ export interface User {
     leagueIds?: string[];
 }
 
+export type Position = 'WR' | 'RB' | 'QB' | 'TE' | 'K' | 'DST';
+
 export interface RankingFile {
     id: string;
     userId: string;
-    position: 'WR' | 'RB' | 'QB' | 'TE' | 'K' | 'DST';
     type: 'SEASONAL' | 'WEEKLY';
-    playerIds: string[]; // Ordered list
+    week?: number; // Only for WEEKLY type
+    rankings: Partial<Record<Position, string[]>>; // Position -> ordered player IDs
+    scores: Partial<Record<Position, number>>; // Position -> accuracy score
     lastUpdated: string;
-    title: string;
-    score: number;
 }
 
 export interface LeaderboardEntry {
-    id: string; // Ranking ID or User ID (for overall)
+    id: string;
     userId: string;
     score: number;
-    position?: string; // 'WR', 'RB', etc., or undefined for Overall
-    rankingId?: string; // Optional reference to specific ranking file
+    position?: Position;
+    rankingId?: string;
 }
 
 // Mock Database
 export const PLAYERS: Player[] = [
-    // RBs - with historical data for top players
+    // RBs - with historical data
     { id: '1', name: 'Elite RB 1', position: 'RB', team: 'STARS', weeklyScores: { 1: 28.5, 2: 22.1, 3: 31.2, 4: 18.7, 5: 25.4 }, lastSeasonRank: 2, currentSeasonAvg: 25.2 },
     { id: '6', name: 'Power RB 2', position: 'RB', team: 'COMETS', weeklyScores: { 1: 19.3, 2: 24.8, 3: 15.2, 4: 22.6, 5: 20.1 }, lastSeasonRank: 5, currentSeasonAvg: 20.4 },
     { id: '8', name: 'Junior RB 3', position: 'RB', team: 'BLUE', weeklyScores: { 1: 12.4, 2: 18.9, 3: 21.5, 4: 14.2, 5: 16.8 }, lastSeasonRank: 12, currentSeasonAvg: 16.8 },
     { id: '11', name: 'Speed RB 4', position: 'RB', team: 'GOLD', weeklyScores: { 1: 15.6, 2: 21.3, 3: 19.8, 4: 23.4, 5: 18.2 }, lastSeasonRank: 8, currentSeasonAvg: 19.7 },
     { id: '12', name: 'Physical RB 5', position: 'RB', team: 'GOLD', weeklyScores: { 1: 14.2, 2: 16.5, 3: 18.9, 4: 12.1, 5: 15.7 }, lastSeasonRank: 11, currentSeasonAvg: 15.5 },
-    { id: '14', name: 'Scat RB 6', position: 'RB', team: 'NEON', lastSeasonRank: 15, currentSeasonAvg: 12.3 },
-    { id: '15', name: 'Goal RB 7', position: 'RB', team: 'ICE', lastSeasonRank: 9, currentSeasonAvg: 14.8 },
-    { id: '19', name: 'Sway RB 8', position: 'RB', team: 'GHOSTS', lastSeasonRank: 18 },
-    { id: '20', name: 'Shift RB 9', position: 'RB', team: 'GHOSTS', lastSeasonRank: 22 },
-    { id: '34', name: 'Rookie RB 10', position: 'RB', team: 'METEORS' }, // No history - rookie
-    { id: '35', name: 'Vet RB 11', position: 'RB', team: 'RED', lastSeasonRank: 7, currentSeasonAvg: 17.1 },
+    { id: '14', name: 'Scat RB 6', position: 'RB', team: 'NEON', weeklyScores: { 1: 10.5, 2: 14.2, 3: 8.9, 4: 15.6, 5: 12.3 }, lastSeasonRank: 15, currentSeasonAvg: 12.3 },
+    { id: '15', name: 'Goal RB 7', position: 'RB', team: 'ICE', weeklyScores: { 1: 18.2, 2: 5.6, 3: 14.8, 4: 22.1, 5: 13.4 }, lastSeasonRank: 9, currentSeasonAvg: 14.8 },
+    { id: '19', name: 'Sway RB 8', position: 'RB', team: 'GHOSTS', weeklyScores: { 1: 8.9, 2: 11.2, 3: 9.5, 4: 10.8, 5: 12.1 }, lastSeasonRank: 18, currentSeasonAvg: 10.5 },
+    { id: '20', name: 'Shift RB 9', position: 'RB', team: 'GHOSTS', weeklyScores: { 1: 7.5, 2: 9.8, 3: 6.2, 4: 12.5, 5: 8.9 }, lastSeasonRank: 22, currentSeasonAvg: 9.0 },
+    { id: '34', name: 'Rookie RB 10', position: 'RB', team: 'METEORS', weeklyScores: { 1: 15.6, 2: 18.2, 3: 22.5, 4: 19.8, 5: 24.1 }, currentSeasonAvg: 20.0 }, // Breakout rookie
+    { id: '35', name: 'Vet RB 11', position: 'RB', team: 'RED', weeklyScores: { 1: 16.5, 2: 15.2, 3: 18.9, 4: 14.1, 5: 17.6 }, lastSeasonRank: 7, currentSeasonAvg: 16.5 },
     { id: '36', name: 'Workhorse RB 12', position: 'RB', team: 'STEEL', weeklyScores: { 1: 21.3, 2: 19.8, 3: 23.5, 4: 20.1, 5: 22.7 }, lastSeasonRank: 4, currentSeasonAvg: 21.5 },
-    { id: '37', name: 'Committee RB 13', position: 'RB', team: 'BOOM', lastSeasonRank: 25 },
-    { id: '38', name: 'Pass RB 14', position: 'RB', team: 'PURPLE', lastSeasonRank: 14, currentSeasonAvg: 11.2 },
-    { id: '39', name: 'Goal RB 15', position: 'RB', team: 'STARS', lastSeasonRank: 19 },
+    { id: '37', name: 'Committee RB 13', position: 'RB', team: 'BOOM', weeklyScores: { 1: 9.8, 2: 5.4, 3: 11.2, 4: 8.7, 5: 7.5 }, lastSeasonRank: 25, currentSeasonAvg: 8.5 },
+    { id: '38', name: 'Pass RB 14', position: 'RB', team: 'PURPLE', weeklyScores: { 1: 12.5, 2: 8.9, 3: 14.5, 4: 9.2, 5: 11.8 }, lastSeasonRank: 14, currentSeasonAvg: 11.4 },
+    { id: '39', name: 'Goal RB 15', position: 'RB', team: 'STARS', weeklyScores: { 1: 5.6, 2: 18.2, 3: 4.5, 4: 12.8, 5: 6.2 }, lastSeasonRank: 19, currentSeasonAvg: 9.5 },
+    { id: '138', name: 'Backup RB 16', position: 'RB', team: 'NYG', weeklyScores: { 1: 2.5, 2: 4.8, 3: 3.2, 4: 5.6, 5: 12.1 }, lastSeasonRank: 45, currentSeasonAvg: 5.6 },
+    { id: '139', name: 'Speed RB 17', position: 'RB', team: 'MIA', weeklyScores: { 1: 14.2, 2: 8.5, 3: 12.1, 4: 6.5, 5: 9.8 }, lastSeasonRank: 32, currentSeasonAvg: 10.2 },
+    { id: '140', name: 'Power RB 18', position: 'RB', team: 'BAL', weeklyScores: { 1: 11.5, 2: 13.2, 3: 10.8, 4: 12.4, 5: 11.9 }, lastSeasonRank: 28, currentSeasonAvg: 12.0 },
+    { id: '141', name: 'Rookie RB 19', position: 'RB', team: 'SEA', weeklyScores: { 1: 0, 2: 5.2, 3: 8.5, 4: 12.8, 5: 15.4 }, currentSeasonAvg: 8.4 },
+    { id: '142', name: 'Vet RB 20', position: 'RB', team: 'NO', weeklyScores: { 1: 8.5, 2: 7.2, 3: 6.5, 4: 5.8, 5: 4.2 }, lastSeasonRank: 21, currentSeasonAvg: 6.4 },
 
-    // WRs - with historical data for top players
+    // WRs - with historical data
     { id: '2', name: 'Speedy WR 1', position: 'WR', team: 'STARS', weeklyScores: { 1: 24.2, 2: 19.8, 3: 28.5, 4: 22.1, 5: 26.3 }, lastSeasonRank: 1, currentSeasonAvg: 24.2 },
     { id: '3', name: 'Reliable WR 2', position: 'WR', team: 'METEORS', weeklyScores: { 1: 18.5, 2: 21.2, 3: 17.8, 4: 19.4, 5: 20.6 }, lastSeasonRank: 4, currentSeasonAvg: 19.5 },
     { id: '4', name: 'Agile WR 3', position: 'WR', team: 'METEORS', weeklyScores: { 1: 22.8, 2: 25.1, 3: 19.3, 4: 27.6, 5: 23.9 }, lastSeasonRank: 3, currentSeasonAvg: 23.7 },
     { id: '5', name: 'Strong WR 4', position: 'WR', team: 'COMETS', weeklyScores: { 1: 16.4, 2: 18.9, 3: 21.2, 4: 15.7, 5: 19.1 }, lastSeasonRank: 6, currentSeasonAvg: 18.3 },
     { id: '7', name: 'Route WR 5', position: 'WR', team: 'BLUE', weeklyScores: { 1: 20.1, 2: 17.5, 3: 22.8, 4: 18.9, 5: 21.4 }, lastSeasonRank: 7, currentSeasonAvg: 20.1 },
-    { id: '9', name: 'Veteran WR 6', position: 'WR', team: 'RED', lastSeasonRank: 8, currentSeasonAvg: 16.8 },
-    { id: '10', name: 'Rookie WR 7', position: 'WR', team: 'RED' }, // No history - rookie
+    { id: '9', name: 'Veteran WR 6', position: 'WR', team: 'RED', weeklyScores: { 1: 12.5, 2: 15.6, 3: 18.9, 4: 11.2, 5: 14.5 }, lastSeasonRank: 8, currentSeasonAvg: 16.8 },
+    { id: '10', name: 'Rookie WR 7', position: 'WR', team: 'RED', weeklyScores: { 1: 8.5, 2: 7.2, 3: 14.5, 4: 9.8, 5: 12.1 }, currentSeasonAvg: 10.4 }, // Rookie history
     { id: '13', name: 'Flash WR 8', position: 'WR', team: 'NEON', weeklyScores: { 1: 32.1, 2: 8.5, 3: 28.9, 4: 6.2, 5: 35.4 }, lastSeasonRank: 12, currentSeasonAvg: 22.2 },
-    { id: '16', name: 'Talent WR 9', position: 'WR', team: 'ICE', lastSeasonRank: 15, currentSeasonAvg: 14.5 },
-    { id: '17', name: 'Smooth WR 10', position: 'WR', team: 'HEAT', lastSeasonRank: 11, currentSeasonAvg: 15.8 },
+    { id: '16', name: 'Talent WR 9', position: 'WR', team: 'ICE', weeklyScores: { 1: 14.5, 2: 12.8, 3: 16.5, 4: 13.9, 5: 15.2 }, lastSeasonRank: 15, currentSeasonAvg: 14.5 },
+    { id: '17', name: 'Smooth WR 10', position: 'WR', team: 'HEAT', weeklyScores: { 1: 15.8, 2: 17.2, 3: 14.9, 4: 16.5, 5: 18.1 }, lastSeasonRank: 11, currentSeasonAvg: 15.8 },
     { id: '18', name: 'Deep WR 11', position: 'WR', team: 'HEAT', weeklyScores: { 1: 8.2, 2: 25.6, 3: 12.4, 4: 31.2, 5: 15.8 }, lastSeasonRank: 18, currentSeasonAvg: 18.6 },
-    { id: '40', name: 'Slot WR 12', position: 'WR', team: 'STEEL', lastSeasonRank: 14, currentSeasonAvg: 13.9 },
-    { id: '41', name: 'Possession WR 13', position: 'WR', team: 'BOOM', lastSeasonRank: 16 },
-    { id: '42', name: 'Deep WR 14', position: 'WR', team: 'PURPLE', lastSeasonRank: 22 },
-    { id: '43', name: 'Rookie WR 15', position: 'WR', team: 'GOLD' }, // No history - rookie
-    { id: '44', name: 'Vet WR 16', position: 'WR', team: 'BLUE', lastSeasonRank: 9, currentSeasonAvg: 16.2 },
-    { id: '45', name: 'Star WR 17', position: 'WR', team: 'COMETS', lastSeasonRank: 5, currentSeasonAvg: 17.9 },
-    { id: '46', name: 'Slot WR 18', position: 'WR', team: 'NEON', lastSeasonRank: 20 },
-    { id: '47', name: 'Big WR 19', position: 'WR', team: 'ICE', lastSeasonRank: 13, currentSeasonAvg: 14.1 },
+    { id: '40', name: 'Slot WR 12', position: 'WR', team: 'STEEL', weeklyScores: { 1: 13.9, 2: 11.5, 3: 15.2, 4: 12.8, 5: 14.6 }, lastSeasonRank: 14, currentSeasonAvg: 13.9 },
+    { id: '41', name: 'Possession WR 13', position: 'WR', team: 'BOOM', weeklyScores: { 1: 10.5, 2: 12.8, 3: 11.2, 4: 13.5, 5: 12.1 }, lastSeasonRank: 16, currentSeasonAvg: 12.0 },
+    { id: '42', name: 'Deep WR 14', position: 'WR', team: 'PURPLE', weeklyScores: { 1: 6.5, 2: 22.1, 3: 5.2, 4: 18.9, 5: 7.8 }, lastSeasonRank: 22, currentSeasonAvg: 12.1 },
+    { id: '43', name: 'Rookie WR 15', position: 'WR', team: 'GOLD', weeklyScores: { 1: 9.8, 2: 11.5, 3: 14.2, 4: 16.8, 5: 19.5 }, currentSeasonAvg: 14.3 },
+    { id: '44', name: 'Vet WR 16', position: 'WR', team: 'BLUE', weeklyScores: { 1: 16.2, 2: 14.8, 3: 15.5, 4: 13.2, 5: 14.1 }, lastSeasonRank: 9, currentSeasonAvg: 16.2 },
+    { id: '45', name: 'Star WR 17', position: 'WR', team: 'COMETS', weeklyScores: { 1: 17.9, 2: 21.5, 3: 16.8, 4: 19.2, 5: 18.5 }, lastSeasonRank: 5, currentSeasonAvg: 17.9 },
+    { id: '46', name: 'Slot WR 18', position: 'WR', team: 'NEON', weeklyScores: { 1: 11.5, 2: 13.2, 3: 12.8, 4: 14.5, 5: 13.1 }, lastSeasonRank: 20, currentSeasonAvg: 13.0 },
+    { id: '47', name: 'Big WR 19', position: 'WR', team: 'ICE', weeklyScores: { 1: 14.1, 2: 9.8, 3: 15.6, 4: 12.5, 5: 11.2 }, lastSeasonRank: 13, currentSeasonAvg: 14.1 },
     { id: '48', name: 'Fast WR 20', position: 'WR', team: 'STARS', weeklyScores: { 1: 18.9, 2: 15.2, 3: 21.5, 4: 17.8, 5: 19.6 }, lastSeasonRank: 10, currentSeasonAvg: 18.6 },
+    { id: '143', name: 'Hands WR 21', position: 'WR', team: 'MIA', weeklyScores: { 1: 12.5, 2: 11.2, 3: 10.8, 4: 13.5, 5: 12.9 }, lastSeasonRank: 28, currentSeasonAvg: 12.1 },
+    { id: '144', name: 'Speed WR 22', position: 'WR', team: 'BUF', weeklyScores: { 1: 15.8, 2: 18.9, 3: 16.5, 4: 21.2, 5: 17.5 }, lastSeasonRank: 19, currentSeasonAvg: 17.9 },
+    { id: '145', name: 'Route WR 23', position: 'WR', team: 'CIN', weeklyScores: { 1: 14.2, 2: 15.8, 3: 13.5, 4: 16.2, 5: 14.9 }, lastSeasonRank: 24, currentSeasonAvg: 14.9 },
+    { id: '146', name: 'Rookie WR 24', position: 'WR', team: 'LAR', weeklyScores: { 1: 5.2, 2: 8.9, 3: 12.5, 4: 14.8, 5: 16.2 }, currentSeasonAvg: 11.5 },
+    { id: '147', name: 'Vet WR 25', position: 'WR', team: 'MIN', weeklyScores: { 1: 18.5, 2: 16.2, 3: 19.8, 4: 15.5, 5: 17.2 }, lastSeasonRank: 17, currentSeasonAvg: 17.4 },
+    { id: '148', name: 'Slot WR 26', position: 'WR', team: 'IND', weeklyScores: { 1: 9.8, 2: 11.2, 3: 10.5, 4: 8.9, 5: 12.4 }, lastSeasonRank: 35, currentSeasonAvg: 10.5 },
+    { id: '149', name: 'Deep WR 27', position: 'WR', team: 'GB', weeklyScores: { 1: 22.1, 2: 4.5, 3: 25.8, 4: 5.2, 5: 18.9 }, lastSeasonRank: 32, currentSeasonAvg: 15.3 },
+    { id: '150', name: 'Big WR 28', position: 'WR', team: 'ATL', weeklyScores: { 1: 13.5, 2: 12.1, 3: 14.8, 4: 11.5, 5: 13.2 }, lastSeasonRank: 29, currentSeasonAvg: 13.0 },
+    { id: '151', name: 'Fast WR 29', position: 'WR', team: 'TB', weeklyScores: { 1: 16.8, 2: 19.2, 3: 15.5, 4: 18.1, 5: 17.5 }, lastSeasonRank: 21, currentSeasonAvg: 17.4 },
+    { id: '152', name: 'Possession WR 30', position: 'WR', team: 'CAR', weeklyScores: { 1: 11.2, 2: 10.5, 3: 12.8, 4: 11.9, 5: 10.2 }, lastSeasonRank: 42, currentSeasonAvg: 11.3 },
 
     // QBs
     { id: '21', name: 'Cannon QB 1', position: 'QB', team: 'STARS', weeklyScores: { 1: 28.4, 2: 24.1, 3: 31.5, 4: 26.8, 5: 29.2 }, lastSeasonRank: 1, currentSeasonAvg: 28.0 },
     { id: '22', name: 'Clutch QB 2', position: 'QB', team: 'METEORS', weeklyScores: { 1: 22.5, 2: 25.8, 3: 21.2, 4: 27.1, 5: 24.6 }, lastSeasonRank: 3, currentSeasonAvg: 24.2 },
     { id: '23', name: 'Dual QB 3', position: 'QB', team: 'COMETS', weeklyScores: { 1: 26.1, 2: 29.5, 3: 24.8, 4: 28.2, 5: 27.4 }, lastSeasonRank: 2, currentSeasonAvg: 27.2 },
-    { id: '24', name: 'Leader QB 4', position: 'QB', team: 'BLUE', lastSeasonRank: 5, currentSeasonAvg: 21.5 },
-    { id: '25', name: 'Wonder QB 5', position: 'QB', team: 'RED', lastSeasonRank: 4, currentSeasonAvg: 22.8 },
-    { id: '49', name: 'Vet QB 6', position: 'QB', team: 'GOLD', lastSeasonRank: 7 },
-    { id: '50', name: 'Rookie QB 7', position: 'QB', team: 'NEON' }, // No history - rookie
-    { id: '51', name: 'Mobile QB 8', position: 'QB', team: 'ICE', lastSeasonRank: 8, currentSeasonAvg: 19.8 },
-    { id: '52', name: 'Pocket QB 9', position: 'QB', team: 'HEAT', lastSeasonRank: 6, currentSeasonAvg: 20.5 },
-    { id: '53', name: 'System QB 10', position: 'QB', team: 'GHOSTS', lastSeasonRank: 10 },
+    { id: '24', name: 'Leader QB 4', position: 'QB', team: 'BLUE', weeklyScores: { 1: 18.5, 2: 21.2, 3: 19.8, 4: 22.5, 5: 20.9 }, lastSeasonRank: 5, currentSeasonAvg: 21.5 },
+    { id: '25', name: 'Wonder QB 5', position: 'QB', team: 'RED', weeklyScores: { 1: 20.8, 2: 23.5, 3: 22.1, 4: 21.8, 5: 25.6 }, lastSeasonRank: 4, currentSeasonAvg: 22.8 },
+    { id: '49', name: 'Vet QB 6', position: 'QB', team: 'GOLD', weeklyScores: { 1: 15.6, 2: 18.2, 3: 16.5, 4: 17.8, 5: 19.1 }, lastSeasonRank: 7, currentSeasonAvg: 17.4 },
+    { id: '50', name: 'Rookie QB 7', position: 'QB', team: 'NEON', weeklyScores: { 1: 14.2, 2: 12.8, 3: 18.5, 4: 22.1, 5: 24.5 }, currentSeasonAvg: 18.4 },
+    { id: '51', name: 'Mobile QB 8', position: 'QB', team: 'ICE', weeklyScores: { 1: 19.8, 2: 15.2, 3: 25.8, 4: 14.5, 5: 23.6 }, lastSeasonRank: 8, currentSeasonAvg: 19.8 },
+    { id: '52', name: 'Pocket QB 9', position: 'QB', team: 'HEAT', weeklyScores: { 1: 20.5, 2: 18.9, 3: 21.2, 4: 19.8, 5: 22.1 }, lastSeasonRank: 6, currentSeasonAvg: 20.5 },
+    { id: '53', name: 'System QB 10', position: 'QB', team: 'GHOSTS', weeklyScores: { 1: 16.5, 2: 14.8, 3: 15.2, 4: 16.9, 5: 15.5 }, lastSeasonRank: 10, currentSeasonAvg: 15.8 },
+    { id: '153', name: 'Backup QB 11', position: 'QB', team: 'NYJ', weeklyScores: { 1: 12.5, 2: 10.8, 3: 13.5, 4: 9.8, 5: 11.2 }, lastSeasonRank: 25, currentSeasonAvg: 11.5 },
+    { id: '154', name: 'Bridge QB 12', position: 'QB', team: 'DEN', weeklyScores: { 1: 13.8, 2: 15.2, 3: 12.9, 4: 14.5, 5: 13.6 }, lastSeasonRank: 28, currentSeasonAvg: 14.0 },
+    { id: '155', name: 'Rookie QB 13', position: 'QB', team: 'LV', weeklyScores: { 1: 8.5, 2: 10.2, 3: 14.5, 4: 16.8, 5: 12.1 }, currentSeasonAvg: 12.4 },
+    { id: '156', name: 'Vet QB 14', position: 'QB', team: 'ATL', weeklyScores: { 1: 17.5, 2: 19.2, 3: 16.8, 4: 18.5, 5: 15.2 }, lastSeasonRank: 12, currentSeasonAvg: 17.4 },
+    { id: '157', name: 'Mobile QB 15', position: 'QB', team: 'WSH', weeklyScores: { 1: 18.2, 2: 24.5, 3: 12.8, 4: 15.6, 5: 21.2 }, lastSeasonRank: 15, currentSeasonAvg: 18.4 },
 
     // TEs - with historical data
     { id: '26', name: 'Beast TE 1', position: 'TE', team: 'STARS', weeklyScores: { 1: 18.5, 2: 15.2, 3: 22.1, 4: 19.8, 5: 16.4 }, lastSeasonRank: 1, currentSeasonAvg: 18.4 },
     { id: '27', name: 'Project TE 2', position: 'TE', team: 'METEORS', weeklyScores: { 1: 8.2, 2: 12.5, 3: 15.8, 4: 10.1, 5: 14.2 }, lastSeasonRank: 6, currentSeasonAvg: 12.2 },
     { id: '28', name: 'Safety TE 3', position: 'TE', team: 'GOLD', weeklyScores: { 1: 14.1, 2: 16.8, 3: 12.5, 4: 18.2, 5: 15.6 }, lastSeasonRank: 2, currentSeasonAvg: 15.4 },
-    { id: '54', name: 'Block TE 4', position: 'TE', team: 'BLUE', lastSeasonRank: 8, currentSeasonAvg: 9.5 },
+    { id: '54', name: 'Block TE 4', position: 'TE', team: 'BLUE', weeklyScores: { 1: 8.5, 2: 9.2, 3: 9.8, 4: 10.1, 5: 9.4 }, lastSeasonRank: 8, currentSeasonAvg: 9.5 },
     { id: '55', name: 'Hands TE 5', position: 'TE', team: 'RED', weeklyScores: { 1: 11.2, 2: 14.5, 3: 9.8, 4: 13.1, 5: 12.4 }, lastSeasonRank: 4, currentSeasonAvg: 12.2 },
-    { id: '56', name: 'Vert TE 6', position: 'TE', team: 'NEON', lastSeasonRank: 5, currentSeasonAvg: 11.8 },
-    { id: '57', name: 'Rookie TE 7', position: 'TE', team: 'ICE' }, // No history - rookie
-    { id: '58', name: 'Vet TE 8', position: 'TE', team: 'HEAT', lastSeasonRank: 3, currentSeasonAvg: 13.5 },
-    { id: '59', name: 'Redzone TE 9', position: 'TE', team: 'GHOSTS', lastSeasonRank: 7 },
-    { id: '60', name: 'Move TE 10', position: 'TE', team: 'STEEL', lastSeasonRank: 9, currentSeasonAvg: 8.9 },
+    { id: '56', name: 'Vert TE 6', position: 'TE', team: 'NEON', weeklyScores: { 1: 10.5, 2: 13.2, 3: 11.8, 4: 12.1, 5: 11.4 }, lastSeasonRank: 5, currentSeasonAvg: 11.8 },
+    { id: '57', name: 'Rookie TE 7', position: 'TE', team: 'ICE', weeklyScores: { 1: 6.5, 2: 8.9, 3: 12.5, 4: 9.8, 5: 14.2 }, currentSeasonAvg: 10.4 },
+    { id: '58', name: 'Vet TE 8', position: 'TE', team: 'HEAT', weeklyScores: { 1: 12.5, 2: 14.2, 3: 13.5, 4: 12.9, 5: 14.5 }, lastSeasonRank: 3, currentSeasonAvg: 13.5 },
+    { id: '59', name: 'Redzone TE 9', position: 'TE', team: 'GHOSTS', weeklyScores: { 1: 14.5, 2: 3.2, 3: 12.8, 4: 4.5, 5: 9.8 }, lastSeasonRank: 7, currentSeasonAvg: 8.9 },
+    { id: '60', name: 'Move TE 10', position: 'TE', team: 'STEEL', weeklyScores: { 1: 7.5, 2: 9.8, 3: 8.5, 4: 9.2, 5: 10.1 }, lastSeasonRank: 9, currentSeasonAvg: 9.0 },
+    { id: '158', name: 'Reliable TE 11', position: 'TE', team: 'ARI', weeklyScores: { 1: 9.8, 2: 10.5, 3: 11.2, 4: 9.5, 5: 10.8 }, lastSeasonRank: 12, currentSeasonAvg: 10.4 },
+    { id: '159', name: 'Catch TE 12', position: 'TE', team: 'DET', weeklyScores: { 1: 13.5, 2: 14.8, 3: 11.2, 4: 12.5, 5: 13.9 }, lastSeasonRank: 10, currentSeasonAvg: 13.2 },
+    { id: '160', name: 'Block TE 13', position: 'TE', team: 'CLE', weeklyScores: { 1: 5.2, 2: 4.8, 3: 6.5, 4: 5.9, 5: 4.2 }, lastSeasonRank: 25, currentSeasonAvg: 5.3 },
+    { id: '161', name: 'Rookie TE 14', position: 'TE', team: 'TEN', weeklyScores: { 1: 2.5, 2: 5.8, 3: 8.9, 4: 11.2, 5: 9.5 }, currentSeasonAvg: 7.6 },
+    { id: '162', name: 'Vet TE 15', position: 'TE', team: 'HOU', weeklyScores: { 1: 8.5, 2: 9.2, 3: 8.9, 4: 7.5, 5: 8.1 }, lastSeasonRank: 18, currentSeasonAvg: 8.4 },
 
     // K - with historical data
     { id: '29', name: 'Leg K 1', position: 'K', team: 'NEON', weeklyScores: { 1: 12.0, 2: 8.0, 3: 15.0, 4: 10.0, 5: 11.0 }, lastSeasonRank: 2, currentSeasonAvg: 11.2 },
     { id: '30', name: 'Clutch K 2', position: 'K', team: 'ICE', weeklyScores: { 1: 9.0, 2: 14.0, 3: 7.0, 4: 12.0, 5: 10.0 }, lastSeasonRank: 4, currentSeasonAvg: 10.4 },
     { id: '61', name: 'Auto K 3', position: 'K', team: 'STARS', weeklyScores: { 1: 11.0, 2: 13.0, 3: 10.0, 4: 14.0, 5: 12.0 }, lastSeasonRank: 1, currentSeasonAvg: 12.0 },
-    { id: '62', name: 'Long K 4', position: 'K', team: 'METEORS', lastSeasonRank: 5, currentSeasonAvg: 9.8 },
-    { id: '63', name: 'Vet K 5', position: 'K', team: 'COMETS', lastSeasonRank: 3, currentSeasonAvg: 10.5 },
-    { id: '64', name: 'Rookie K 6', position: 'K', team: 'BLUE' }, // No history - rookie
-    { id: '65', name: 'Dome K 7', position: 'K', team: 'RED', lastSeasonRank: 6, currentSeasonAvg: 9.2 },
-    { id: '66', name: 'Snow K 8', position: 'K', team: 'GOLD', lastSeasonRank: 8 },
+    { id: '62', name: 'Long K 4', position: 'K', team: 'METEORS', weeklyScores: { 1: 10.0, 2: 9.0, 3: 11.0, 4: 8.0, 5: 10.5 }, lastSeasonRank: 5, currentSeasonAvg: 9.8 },
+    { id: '63', name: 'Vet K 5', position: 'K', team: 'COMETS', weeklyScores: { 1: 9.0, 2: 11.0, 3: 10.0, 4: 12.0, 5: 10.5 }, lastSeasonRank: 3, currentSeasonAvg: 10.5 },
+    { id: '64', name: 'Rookie K 6', position: 'K', team: 'BLUE', weeklyScores: { 1: 8.0, 2: 7.0, 3: 9.0, 4: 11.0, 5: 10.0 }, currentSeasonAvg: 9.0 },
+    { id: '65', name: 'Dome K 7', position: 'K', team: 'RED', weeklyScores: { 1: 10.0, 2: 8.0, 3: 11.0, 4: 9.0, 5: 8.2 }, lastSeasonRank: 6, currentSeasonAvg: 9.2 },
+    { id: '66', name: 'Snow K 8', position: 'K', team: 'GOLD', weeklyScores: { 1: 7.0, 2: 8.0, 3: 6.0, 4: 10.0, 5: 9.0 }, lastSeasonRank: 8, currentSeasonAvg: 8.0 },
     { id: '67', name: 'Accurate K 9', position: 'K', team: 'HEAT', weeklyScores: { 1: 10.0, 2: 11.0, 3: 9.0, 4: 13.0, 5: 10.0 }, lastSeasonRank: 7, currentSeasonAvg: 10.6 },
-    { id: '68', name: 'Power K 10', position: 'K', team: 'GHOSTS', lastSeasonRank: 10 },
+    { id: '68', name: 'Power K 10', position: 'K', team: 'GHOSTS', weeklyScores: { 1: 9.0, 2: 12.0, 3: 8.0, 4: 11.0, 5: 9.0 }, lastSeasonRank: 10, currentSeasonAvg: 9.8 },
+    { id: '163', name: 'Leg K 11', position: 'K', team: 'PHI', weeklyScores: { 1: 12.0, 2: 10.0, 3: 11.0, 4: 9.0, 5: 10.5 }, lastSeasonRank: 12, currentSeasonAvg: 10.5 },
+    { id: '164', name: 'Clutch K 12', position: 'K', team: 'KC', weeklyScores: { 1: 11.0, 2: 13.0, 3: 10.0, 4: 12.0, 5: 11.5 }, lastSeasonRank: 9, currentSeasonAvg: 11.5 },
 
     // DST - with historical data
     { id: '31', name: 'Steel Curtain', position: 'DST', team: 'STEEL', weeklyScores: { 1: 14.0, 2: 8.0, 3: 18.0, 4: 6.0, 5: 12.0 }, lastSeasonRank: 1, currentSeasonAvg: 11.6 },
     { id: '32', name: 'Legion of Boom', position: 'DST', team: 'BOOM', weeklyScores: { 1: 10.0, 2: 16.0, 3: 5.0, 4: 14.0, 5: 9.0 }, lastSeasonRank: 3, currentSeasonAvg: 10.8 },
     { id: '33', name: 'Purple People', position: 'DST', team: 'PURPLE', weeklyScores: { 1: 8.0, 2: 12.0, 3: 15.0, 4: 7.0, 5: 11.0 }, lastSeasonRank: 4, currentSeasonAvg: 10.6 },
     { id: '69', name: 'Monsters', position: 'DST', team: 'CHI', weeklyScores: { 1: 16.0, 2: 4.0, 3: 12.0, 4: 10.0, 5: 8.0 }, lastSeasonRank: 2, currentSeasonAvg: 10.0 },
-    { id: '70', name: 'No Fly Zone', position: 'DST', team: 'DEN', lastSeasonRank: 5, currentSeasonAvg: 9.5 },
-    { id: '71', name: 'Sacksonville', position: 'DST', team: 'JAX', lastSeasonRank: 6, currentSeasonAvg: 8.8 },
-    { id: '72', name: 'Doomsday', position: 'DST', team: 'DAL', lastSeasonRank: 8 },
-    { id: '73', name: 'Big Blue', position: 'DST', team: 'NYG', lastSeasonRank: 7, currentSeasonAvg: 9.2 },
-    { id: '74', name: 'Fearsome', position: 'DST', team: 'LAR', lastSeasonRank: 9 },
+    { id: '70', name: 'No Fly Zone', position: 'DST', team: 'DEN', weeklyScores: { 1: 9.0, 2: 6.0, 3: 14.0, 4: 10.0, 5: 8.5 }, lastSeasonRank: 5, currentSeasonAvg: 9.5 },
+    { id: '71', name: 'Sacksonville', position: 'DST', team: 'JAX', weeklyScores: { 1: 8.0, 2: 12.0, 3: 10.0, 4: 6.0, 5: 9.0 }, lastSeasonRank: 6, currentSeasonAvg: 9.0 },
+    { id: '72', name: 'Doomsday', position: 'DST', team: 'DAL', weeklyScores: { 1: 12.0, 2: 5.0, 3: 8.0, 4: 14.0, 5: 7.0 }, lastSeasonRank: 8, currentSeasonAvg: 9.2 },
+    { id: '73', name: 'Big Blue', position: 'DST', team: 'NYG', weeklyScores: { 1: 6.0, 2: 10.0, 3: 12.0, 4: 8.0, 5: 9.2 }, lastSeasonRank: 7, currentSeasonAvg: 9.0 },
+    { id: '74', name: 'Fearsome', position: 'DST', team: 'LAR', weeklyScores: { 1: 9.0, 2: 8.0, 3: 6.0, 4: 12.0, 5: 7.0 }, lastSeasonRank: 9, currentSeasonAvg: 8.4 },
     { id: '75', name: 'Killer B', position: 'DST', team: 'BAL', weeklyScores: { 1: 11.0, 2: 9.0, 3: 14.0, 4: 8.0, 5: 10.0 }, lastSeasonRank: 10, currentSeasonAvg: 10.4 },
+    { id: '165', name: 'Empire', position: 'DST', team: 'SF', weeklyScores: { 1: 14.0, 2: 8.0, 3: 12.0, 4: 10.0, 5: 11.0 }, lastSeasonRank: 11, currentSeasonAvg: 11.0 },
+    { id: '166', name: 'Pats', position: 'DST', team: 'NE', weeklyScores: { 1: 12.0, 2: 10.0, 3: 9.0, 4: 13.0, 5: 8.0 }, lastSeasonRank: 12, currentSeasonAvg: 10.4 },
 ];
 
 export const USERS: User[] = [
@@ -285,273 +315,94 @@ export const LEAGUES: League[] = [
 ];
 
 export const RANKINGS: RankingFile[] = [
-    // WRs
+    // User 1 - gridiron_guru (Season + Weekly)
     {
-        id: 'f1',
+        id: 'r1-s',
         userId: 'u1',
-        position: 'WR',
         type: 'SEASONAL',
-        title: 'Top 50 WRs (PPR)',
+        rankings: {
+            WR: ['2', '4', '3', '5', '7', '17', '16', '144', '145', '151', '147', '18', '149', '44', '9', '40', '148', '46', '41', '143', '47', '43', '10'],
+            RB: ['1', '36', '6', '11', '8', '35', '12', '140', '15', '14', '38', '139', '19', '20', '39', '141', '138', '37', '142', '34'],
+            QB: ['21', '23', '22', '24', '25', '52', '157', '51', '156', '53', '49', '154', '153', '155', '50'],
+            TE: ['26', '28', '159', '58', '55', '27', '158', '56', '60', '59', '162', '54', '161', '160', '57'],
+            K: ['61', '29', '163', '164', '67', '30', '63', '62', '65', '66', '68', '64'],
+            DST: ['31', '32', '165', '166', '75', '33', '69', '73', '70', '72', '71', '74'],
+        },
+        scores: { WR: 94, RB: 91, QB: 88, TE: 85, K: 72, DST: 78 },
         lastUpdated: '2025-08-20T10:00:00Z',
-        playerIds: ['4', '2', '3', '5', '7', '43', '40', '13', '16', '17'],
-        score: 94,
     },
     {
-        id: 'f1-w',
+        id: 'r1-w',
         userId: 'u1',
-        position: 'WR',
         type: 'WEEKLY',
-        title: 'Week 1 WR Locks',
+        week: 1,
+        rankings: {
+            WR: ['13', '2', '4', '149', '7', '144', '3', '5', '48', '147', '21', '22', '17', '145', '16', '151', '44', '150', '46', '40'],
+            RB: ['1', '36', '6', '15', '35', '11', '12', '139', '38', '140', '14', '8', '19', '138', '34', '141', '20', '142', '37', '39'],
+            QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53', '154', '49', '155', '50', '153'],
+            TE: ['26', '159', '55', '26', '58', '56', '27', '158', '60', '54', '162', '59', '57', '161', '160'],
+            K: ['61', '164', '163', '29', '62', '30', '67', '63', '65', '66', '68', '64'],
+            DST: ['31', '165', '32', '166', '75', '33', '69', '73', '70', '72', '71', '74'],
+        },
+        scores: { WR: 88, RB: 85, QB: 90, TE: 82, K: 75, DST: 80 },
         lastUpdated: '2025-09-04T08:00:00Z',
-        playerIds: ['2', '4', '7', '3', '5', '16', '17', '43', '40', '13'],
-        score: 88,
     },
+    // User 2 - fantasy_pro22
     {
-        id: 'f2',
+        id: 'r2-s',
         userId: 'u2',
-        position: 'WR',
         type: 'SEASONAL',
-        title: 'My Season WRs',
+        rankings: {
+            WR: ['4', '2', '3', '5', '144', '7', '17', '145', '16', '147', '44', '151', '9', '40', '148', '18', '149', '41', '46', '143'],
+            RB: ['36', '1', '6', '11', '8', '12', '35', '140', '15', '38', '139', '14', '19', '39', '20', '141', '37', '142', '34', '138'],
+            QB: ['23', '21', '22', '25', '24', '157', '52', '51', '53', '156', '49', '154', '50', '155', '153'],
+            TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60', '54', '162', '57', '161', '160'],
+            K: ['163', '61', '29', '164', '67', '30', '63', '62', '65', '66', '68', '64'],
+            DST: ['165', '31', '32', '166', '75', '33', '69', '73', '70', '72', '71', '74'],
+        },
+        scores: { WR: 82, RB: 78, QB: 80, TE: 87, K: 85, DST: 82 },
         lastUpdated: '2025-08-21T14:30:00Z',
-        playerIds: ['2', '4', '5', '3', '7', '43', '13', '40', '16', '18'],
-        score: 82,
     },
     {
-        id: 'f2-w',
+        id: 'r2-w',
         userId: 'u2',
-        position: 'WR',
         type: 'WEEKLY',
-        title: 'Week 1 Winners',
+        week: 1,
+        rankings: {
+            WR: ['4', '13', '2', '149', '3', '144', '5', '7', '147', '48', '145', '17', '151', '16', '150', '44', '21', '22', '18', '40'],
+            RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140', '8', '14', '141', '34', '19', '20', '39', '138', '37', '142'],
+            TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54', '60', '57', '162', '161', '160'],
+            QB: ['22', '21', '157', '23', '25', '24', '52', '51', '156', '53', '154', '49', '155', '50', '153'],
+            K: ['61', '163', '29', '164', '65', '62', '67', '30', '63', '66', '68', '64'],
+            DST: ['69', '31', '32', '165', '166', '75', '30', '70', '71', '73', '72', '74'],
+        },
+        scores: { WR: 95, RB: 80, TE: 90, QB: 85, K: 78, DST: 84 },
         lastUpdated: '2025-09-03T12:00:00Z',
-        playerIds: ['4', '2', '5', '13', '3', '7', '18', '16', '43', '40'],
-        score: 95,
     },
-
-    // RBs
-    {
-        id: 'f3',
-        userId: 'u1',
-        position: 'RB',
-        type: 'SEASONAL',
-        title: 'RB Bellcows',
-        lastUpdated: '2025-08-20T10:05:00Z',
-        playerIds: ['1', '6', '8', '11', '12', '14', '15', '19', '20', '36'],
-        score: 91,
-    },
-    {
-        id: 'f3-w',
-        userId: 'u1',
-        position: 'RB',
-        type: 'WEEKLY',
-        title: 'Week 1 RB Plays',
-        lastUpdated: '2025-09-05T09:00:00Z',
-        playerIds: ['6', '1', '11', '8', '36', '15', '12', '14', '19', '20'],
-        score: 85,
-    },
-    {
-        id: 'f4',
-        userId: 'u4',
-        position: 'RB',
-        type: 'SEASONAL',
-        title: 'Pure Stats RBs',
-        lastUpdated: '2025-08-22T11:00:00Z',
-        playerIds: ['11', '1', '6', '12', '8', '14', '36', '37', '38', '39'],
-        score: 78,
-    },
-    {
-        id: 'f4-w',
-        userId: 'u4',
-        position: 'RB',
-        type: 'WEEKLY',
-        title: 'Stats Week 1',
-        lastUpdated: '2025-09-04T16:00:00Z',
-        playerIds: ['1', '11', '6', '36', '12', '8', '37', '38', '39', '14'],
-        score: 70,
-    },
-
-    // QBs
-    {
-        id: 'f5',
-        userId: 'u2',
-        position: 'QB',
-        type: 'SEASONAL',
-        title: 'Elite Signal Callers',
-        lastUpdated: '2025-08-19T09:00:00Z',
-        playerIds: ['21', '23', '22', '49', '24', '51', '25', '50', '52', '53'],
-        score: 89,
-    },
-    {
-        id: 'f5-w',
-        userId: 'u2',
-        position: 'QB',
-        type: 'WEEKLY',
-        title: 'Week 1 QB Tiers',
-        lastUpdated: '2025-09-02T10:00:00Z',
-        playerIds: ['23', '21', '51', '22', '24', '49', '25', '50', '53', '52'],
-        score: 92,
-    },
-
-    // TEs
-    {
-        id: 'f6',
-        userId: 'u1',
-        position: 'TE',
-        type: 'SEASONAL',
-        title: 'Safety Blanket TEs',
-        lastUpdated: '2025-08-25T15:00:00Z',
-        playerIds: ['26', '28', '27', '55', '54', '59', '60', '58', '56', '57'],
-        score: 87,
-    },
-    {
-        id: 'f7',
-        userId: 'u2',
-        position: 'TE',
-        type: 'WEEKLY',
-        title: 'Week 1 Streamers',
-        lastUpdated: '2025-09-06T11:00:00Z',
-        playerIds: ['28', '26', '55', '27', '60', '54', '59', '56', '58', '57'],
-        score: 90,
-    },
-
-    // K
-    {
-        id: 'f8',
-        userId: 'u3',
-        position: 'K',
-        type: 'SEASONAL',
-        title: 'The Leg Club',
-        lastUpdated: '2025-08-28T08:00:00Z',
-        playerIds: ['61', '29', '62', '30', '63', '67', '68', '64', '65', '66'],
-        score: 48,
-    },
-    {
-        id: 'f9',
-        userId: 'u3',
-        position: 'K',
-        type: 'WEEKLY',
-        title: 'Dome Specials Week 1',
-        lastUpdated: '2025-09-05T14:00:00Z',
-        playerIds: ['65', '61', '62', '29', '67', '30', '68', '63', '64', '66'],
-        score: 30,
-    },
-
-    // DST
-    {
-        id: 'f10',
-        userId: 'u4',
-        position: 'DST',
-        type: 'SEASONAL',
-        title: 'Shutout Units',
-        lastUpdated: '2025-08-20T12:00:00Z',
-        playerIds: ['31', '32', '75', '33', '69', '70', '72', '71', '73', '74'],
-        score: 75,
-    },
-    {
-        id: 'f11',
-        userId: 'u4',
-        position: 'DST',
-        type: 'WEEKLY',
-        title: 'Best Week 1 Defense',
-        lastUpdated: '2025-09-04T18:00:00Z',
-        playerIds: ['32', '69', '31', '75', '70', '33', '71', '72', '74', '73'],
-        score: 81,
-    },
-
-    // --- EXPANDED DATA ---
-
-    // More WRs
-    {
-        id: 'x1', userId: 'u5', position: 'WR', type: 'SEASONAL', title: 'DK WR Rankings',
-        lastUpdated: '2025-08-25', playerIds: ['2', '4', '7', '3', '5', '16', '13', '40', '17', '43'], score: 87
-    },
-    {
-        id: 'x2', userId: 'u6', position: 'WR', type: 'SEASONAL', title: 'Waiver Wire Gold',
-        lastUpdated: '2025-08-26', playerIds: ['4', '2', '5', '3', '7', '18', '16', '40', '13', '43'], score: 90
-    },
-    {
-        id: 'x3', userId: 'u7', position: 'WR', type: 'SEASONAL', title: 'Auto Picks',
-        lastUpdated: '2025-08-22', playerIds: ['2', '4', '3', '5', '7', '13', '16', '17', '40', '43'], score: 65
-    },
-    {
-        id: 'x4', userId: 'u11', position: 'WR', type: 'WEEKLY', title: 'Week 1 WRs',
-        lastUpdated: '2025-09-03', playerIds: ['4', '2', '3', '5', '7', '16', '13', '40', '17', '18'], score: 83
-    },
-    {
-        id: 'x5', userId: 'u12', position: 'WR', type: 'WEEKLY', title: 'Dynasty WRs W1',
-        lastUpdated: '2025-09-04', playerIds: ['2', '4', '7', '3', '16', '5', '13', '43', '40', '17'], score: 88
-    },
-
-    // More RBs
-    {
-        id: 'x6', userId: 'u5', position: 'RB', type: 'SEASONAL', title: 'DK RB Rankings',
-        lastUpdated: '2025-08-25', playerIds: ['1', '6', '11', '8', '12', '14', '36', '15', '20', '19'], score: 85
-    },
-    {
-        id: 'x7', userId: 'u8', position: 'RB', type: 'SEASONAL', title: 'Touchdown RBs',
-        lastUpdated: '2025-08-27', playerIds: ['6', '1', '12', '11', '15', '36', '8', '14', '37', '20'], score: 82
-    },
-    {
-        id: 'x8', userId: 'u11', position: 'RB', type: 'SEASONAL', title: 'Zero RB Candidates',
-        lastUpdated: '2025-08-28', playerIds: ['14', '15', '20', '19', '39', '37', '38', '12', '36', '8'], score: 79
-    },
-    {
-        id: 'x9', userId: 'u6', position: 'RB', type: 'WEEKLY', title: 'Week 1 RB Sleepers',
-        lastUpdated: '2025-09-05', playerIds: ['11', '14', '15', '8', '37', '1', '6', '12', '36', '20'], score: 93
-    },
-
-    // More QBs
-    {
-        id: 'x10', userId: 'u8', position: 'QB', type: 'SEASONAL', title: 'QB TD Machines',
-        lastUpdated: '2025-08-24', playerIds: ['21', '23', '49', '22', '24', '51', '25', '50', '52', '53'], score: 86
-    },
-    {
-        id: 'x11', userId: 'u14', position: 'QB', type: 'SEASONAL', title: 'Unlimited Potential',
-        lastUpdated: '2025-08-23', playerIds: ['23', '51', '21', '22', '50', '24', '49', '53', '52', '25'], score: 72
-    },
-    {
-        id: 'x12', userId: 'u5', position: 'QB', type: 'WEEKLY', title: 'Week 1 QBs',
-        lastUpdated: '2025-09-02', playerIds: ['22', '21', '23', '24', '49', '51', '50', '25', '52', '53'], score: 88
-    },
-
-    // More TEs
-    {
-        id: 'x13', userId: 'u5', position: 'TE', type: 'SEASONAL', title: 'DK TE Rankings',
-        lastUpdated: '2025-08-25', playerIds: ['26', '28', '27', '55', '54', '60', '59', '56', '58', '57'], score: 84
-    },
-    {
-        id: 'x14', userId: 'u13', position: 'TE', type: 'WEEKLY', title: 'Sunday TE Streams',
-        lastUpdated: '2025-09-06', playerIds: ['55', '26', '60', '28', '27', '54', '56', '59', '58', '57'], score: 76
-    },
-
-    // More Kickers (because why not)
-    {
-        id: 'x15', userId: 'u10', position: 'K', type: 'SEASONAL', title: 'Golden Boots',
-        lastUpdated: '2025-08-29', playerIds: ['61', '62', '29', '30', '67', '63', '65', '64', '66', '68'], score: 96
-    },
-    {
-        id: 'x16', userId: 'u10', position: 'K', type: 'WEEKLY', title: 'Week 1 Legs',
-        lastUpdated: '2025-09-05', playerIds: ['61', '65', '62', '29', '67', '30', '63', '64', '68', '66'], score: 98
-    },
-    {
-        id: 'x17', userId: 'u7', position: 'K', type: 'SEASONAL', title: 'Kicker Picks',
-        lastUpdated: '2025-08-22', playerIds: ['29', '30', '61', '62', '63', '64', '65', '66', '67', '68'], score: 60
-    },
-
-    // More DSTs
-    {
-        id: 'x18', userId: 'u9', position: 'DST', type: 'SEASONAL', title: 'Sack City',
-        lastUpdated: '2025-08-21', playerIds: ['31', '32', '71', '69', '33', '75', '70', '74', '72', '73'], score: 88
-    },
-    {
-        id: 'x19', userId: 'u9', position: 'DST', type: 'WEEKLY', title: 'Week 1 Defenses',
-        lastUpdated: '2025-09-04', playerIds: ['71', '32', '31', '69', '75', '70', '33', '74', '72', '73'], score: 92
-    },
-    {
-        id: 'x20', userId: 'u13', position: 'DST', type: 'WEEKLY', title: 'Safe DST Plays',
-        lastUpdated: '2025-09-04', playerIds: ['31', '32', '69', '70', '33', '75', '71', '72', '74', '73'], score: 80
-    },
+    // User 3-14 (populated overall rankings)
+    { id: 'r3-s', userId: 'u3', type: 'SEASONAL', rankings: { WR: ['2', '4', '144', '3', '7', '5', '145', '16', '17', '151', '147', '44', '149', '9', '40', '13', '148', '18', '150', '43'], RB: ['1', '36', '6', '35', '11', '140', '12', '15', '8', '38', '139', '14', '19', '141', '20', '39', '34', '138', '37', '142'], QB: ['23', '21', '22', '157', '25', '24', '52', '51', '49', '156', '53', '154', '50', '153', '155'], TE: ['159', '26', '28', '58', '55', '27', '158', '56', '60', '59', '54', '162', '57', '161', '160'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66', '68', '64'], DST: ['31', '32', '165', '166', '75', '33', '69', '73', '70', '72', '71', '74'] }, scores: { WR: 75, RB: 72, QB: 70, TE: 68, K: 48, DST: 70 }, lastUpdated: '2025-08-28T08:00:00Z' },
+    { id: 'r3-w', userId: 'u3', type: 'WEEKLY', week: 1, rankings: { WR: ['13', '2', '4', '149', '7', '144', '3', '5', '48', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '159', '55', '26', '58', '56', '27', '158', '60', '54'], K: ['61', '163', '29', '164', '65', '62', '67', '30', '63', '66', '68', '64'], DST: ['31', '32', '165', '166', '75', '33', '69', '73', '70', '72', '71', '74'] }, scores: { WR: 80, RB: 78, QB: 82, TE: 75, K: 30, DST: 85 }, lastUpdated: '2025-09-05T14:00:00Z' },
+    { id: 'r4-s', userId: 'u4', type: 'SEASONAL', rankings: { WR: ['4', '2', '3', '5', '144', '7', '17', '145', '16', '147'], RB: ['36', '1', '6', '11', '8', '12', '35', '140', '15', '38'], QB: ['23', '21', '22', '25', '24', '157', '52', '51', '53', '156'], TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66'], DST: ['31', '165', '32', '166', '75', '33', '69', '70', '73', '72', '71', '74'] }, scores: { WR: 82, RB: 80, QB: 78, TE: 85, K: 70, DST: 75 }, lastUpdated: '2025-08-20T12:00:00Z' },
+    { id: 'r4-w', userId: 'u4', type: 'WEEKLY', week: 1, rankings: { WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73', '72', '74'] }, scores: { WR: 85, RB: 88, QB: 80, TE: 82, K: 75, DST: 81 }, lastUpdated: '2025-09-04T18:00:00Z' },
+    { id: 'r5-s', userId: 'u5', type: 'SEASONAL', rankings: { WR: ['2', '4', '144', '3', '7', '5', '145', '17', '151', '16', '147', '9', '44', '149', '40', '18', '143', '148', '43', '10'], RB: ['1', '36', '6', '35', '11', '8', '140', '12', '15', '38', '14', '139', '19', '141', '39', '20', '34', '138', '142', '37'], QB: ['21', '23', '22', '24', '157', '25', '52', '51', '156', '53', '49', '154', '153', '50', '155'], TE: ['159', '26', '28', '58', '55', '27', '158', '56', '60', '59', '54', '162', '57', '161', '160'], K: ['61', '163', '29', '62', '30', '164', '67', '63', '65', '66'], DST: ['31', '32', '165', '166', '71', '69', '33', '75', '70', '74'] }, scores: { WR: 87, RB: 85, QB: 84, TE: 84, K: 80, DST: 82 }, lastUpdated: '2025-08-25T10:00:00Z' },
+    { id: 'r5-w', userId: 'u5', type: 'WEEKLY', week: 1, rankings: { WR: ['13', '2', '4', '149', '7', '144', '3', '5', '48', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['23', '21', '22', '157', '25', '24', '52', '51', '156', '53', '154', '49', '155', '50', '153'], TE: ['26', '159', '55', '26', '58', '56', '27', '158', '60', '54'], K: ['61', '163', '29', '164', '65', '62', '67', '30', '63', '66'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73'] }, scores: { WR: 82, RB: 85, QB: 88, TE: 80, K: 78, DST: 84 }, lastUpdated: '2025-09-02T11:00:00Z' },
+    { id: 'r6-s', userId: 'u6', type: 'SEASONAL', rankings: { WR: ['4', '144', '2', '3', '5', '17', '7', '145', '147', '16', '151', '18', '44', '149', '9', '40', '148', '143', '46', '41'], RB: ['1', '36', '6', '11', '8', '12', '35', '140', '15', '38'], QB: ['23', '21', '22', '25', '24', '157', '52', '51', '53', '156'], TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60'], K: ['61', '164', '29', '163', '30', '62', '67', '63', '65', '66'], DST: ['31', '165', '32', '166', '75', '33', '69', '70', '73', '72'] }, scores: { WR: 90, RB: 85, QB: 82, TE: 80, K: 75, DST: 78 }, lastUpdated: '2025-08-26T09:00:00Z' },
+    { id: 'r6-w', userId: 'u6', type: 'WEEKLY', week: 1, rankings: { RB: ['36', '15', '1', '6', '14', '35', '11', '140', '38', '12', '139', '8', '19', '141', '34', '39', '20', '138', '142', '37'], WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73'] }, scores: { RB: 93, WR: 88, QB: 85, TE: 82, K: 80, DST: 85 }, lastUpdated: '2025-09-05T08:00:00Z' },
+    { id: 'r7-s', userId: 'u7', type: 'SEASONAL', rankings: { WR: ['2', '4', '144', '3', '7', '5', '145', '16', '17', '151', '147', '44', '149', '9', '40', '13', '148', '18', '150', '43'], RB: ['1', '6', '11', '8', '12', '14', '36', '15', '20', '19'], QB: ['21', '22', '23', '24', '25', '49', '50', '51', '52', '53'], TE: ['26', '27', '28', '54', '55', '56', '57', '58', '59', '60'], K: ['61', '164', '29', '163', '30', '62', '67', '63', '65', '66', '68', '64'], DST: ['31', '32', '33', '69', '70', '71', '72', '73', '74', '75'] }, scores: { WR: 65, RB: 70, QB: 75, TE: 68, K: 60, DST: 72 }, lastUpdated: '2025-08-22T15:00:00Z' },
+    { id: 'r8-s', userId: 'u8', type: 'SEASONAL', rankings: { RB: ['1', '36', '6', '35', '11', '140', '12', '15', '8', '38', '139', '14', '19', '141', '20', '39', '34', '138', '37', '142'], QB: ['23', '21', '22', '157', '25', '24', '52', '51', '49', '156', '53', '154', '50', '153', '155'], WR: ['4', '2', '3', '5', '144', '7', '17', '145', '16', '147'], TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66'], DST: ['31', '165', '32', '166', '75', '33', '69', '70', '73', '72'] }, scores: { RB: 82, QB: 86, WR: 80, TE: 75, K: 78, DST: 82 }, lastUpdated: '2025-08-27T14:00:00Z' },
+    { id: 'r9-s', userId: 'u9', type: 'SEASONAL', rankings: { DST: ['31', '32', '165', '166', '71', '69', '33', '75', '70', '74', '72', '73'], WR: ['2', '4', '144', '3', '7', '5', '145', '16', '17', '151'], RB: ['1', '36', '6', '35', '11', '140', '12', '15', '8', '38'], QB: ['23', '21', '22', '157', '25', '24', '52', '51', '49', '156'], TE: ['159', '26', '28', '58', '55', '27', '158', '56', '60', '59'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66'] }, scores: { DST: 88, WR: 82, RB: 80, QB: 85, TE: 78, K: 75 }, lastUpdated: '2025-08-21T10:00:00Z' },
+    { id: 'r9-w', userId: 'u9', type: 'WEEKLY', week: 1, rankings: { DST: ['71', '69', '32', '31', '165', '166', '75', '70', '33', '74', '72', '73'], WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64'] }, scores: { DST: 92, WR: 85, RB: 88, QB: 80, TE: 82, K: 78 }, lastUpdated: '2025-09-04T16:00:00Z' },
+    { id: 'r10-s', userId: 'u10', type: 'SEASONAL', rankings: { K: ['61', '163', '29', '62', '30', '164', '67', '63', '65', '66', '68', '64'], WR: ['4', '2', '3', '5', '144', '7', '17', '145', '16', '147'], RB: ['36', '1', '6', '11', '8', '12', '35', '140', '15', '38'], QB: ['23', '21', '22', '25', '24', '157', '52', '51', '53', '156'], TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60'], DST: ['31', '165', '32', '166', '75', '33', '69', '70', '73', '72'] }, scores: { K: 96, WR: 85, RB: 82, QB: 88, TE: 80, DST: 84 }, lastUpdated: '2025-08-29T11:00:00Z' },
+    { id: 'r10-w', userId: 'u10', type: 'WEEKLY', week: 1, rankings: { K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64', '68', '66'], WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73'] }, scores: { K: 98, WR: 90, RB: 88, QB: 85, TE: 82, DST: 85 }, lastUpdated: '2025-09-05T10:00:00Z' },
+    { id: 'r11-s', userId: 'u11', type: 'SEASONAL', rankings: { RB: ['36', '35', '140', '15', '38', '139', '14', '39', '141', '138', '37', '19', '20', '34', '142', '12', '11', '8', '6', '1'], WR: ['2', '4', '144', '3', '7', '5', '145', '16', '17', '151'], QB: ['23', '21', '22', '157', '25', '24', '52', '51', '49', '156'], TE: ['159', '26', '28', '58', '55', '27', '158', '56', '60', '59'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66'], DST: ['31', '32', '165', '166', '75', '33', '69', '73', '70', '72'] }, scores: { RB: 79, WR: 82, QB: 80, TE: 75, K: 78, DST: 82 }, lastUpdated: '2025-08-28T13:00:00Z' },
+    { id: 'r11-w', userId: 'u11', type: 'WEEKLY', week: 1, rankings: { WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147', '151', '145', '17', '44', '150', '9', '40', '18', '148', '143'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], K: ['61', '163', '29', '164', '65', '62', '67', '30', '63', '64'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73'] }, scores: { WR: 83, RB: 85, QB: 80, TE: 82, K: 75, DST: 81 }, lastUpdated: '2025-09-03T09:00:00Z' },
+    { id: 'r12-w', userId: 'u12', type: 'WEEKLY', week: 1, rankings: { WR: ['2', '13', '4', '7', '149', '3', '146', '16', '5', '144', '151', '43', '40', '147', '17', '150', '44', '21', '18', '145'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], TE: ['26', '55', '159', '26', '58', '56', '27', '59', '158', '54'], K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64'], DST: ['69', '31', '165', '32', '75', '166', '33', '70', '71', '73'] }, scores: { WR: 88, RB: 85, QB: 82, TE: 80, K: 78, DST: 84 }, lastUpdated: '2025-09-04T07:00:00Z' },
+    { id: 'r13-w', userId: 'u13', type: 'WEEKLY', week: 1, rankings: { TE: ['159', '55', '26', '60', '28', '27', '58', '54', '56', '59', '162', '158', '161', '160', '57'], DST: ['69', '31', '32', '165', '166', '70', '33', '75', '71', '72', '74', '73'], WR: ['13', '149', '4', '2', '3', '5', '7', '144', '16', '147'], RB: ['36', '1', '15', '6', '11', '35', '12', '139', '38', '140'], QB: ['21', '23', '22', '25', '157', '52', '51', '24', '156', '53'], K: ['61', '65', '163', '62', '29', '67', '30', '164', '63', '64'] }, scores: { TE: 76, DST: 80, WR: 85, RB: 82, QB: 88, K: 75 }, lastUpdated: '2025-09-06T11:00:00Z' },
+    { id: 'r14-s', userId: 'u14', type: 'SEASONAL', rankings: { QB: ['23', '51', '21', '22', '157', '50', '24', '155', '49', '53', '154', '156', '52', '25', '153'], WR: ['4', '2', '3', '5', '144', '7', '17', '145', '16', '147'], RB: ['36', '1', '6', '11', '8', '12', '35', '140', '15', '38'], TE: ['26', '159', '28', '55', '58', '27', '158', '56', '59', '60'], K: ['61', '163', '164', '29', '62', '30', '67', '63', '65', '66'], DST: ['31', '165', '32', '166', '75', '33', '69', '70', '73', '72'] }, scores: { QB: 72, WR: 80, RB: 75, TE: 85, K: 70, DST: 78 }, lastUpdated: '2025-08-23T16:00:00Z' },
 ];
 
 // Helpers
 export const getPlayer = (id: string) => PLAYERS.find(p => p.id === id);
 export const getUser = (id: string) => USERS.find(u => u.id === id);
+export const getRanking = (id: string) => RANKINGS.find(r => r.id === id);
+export const getUserRankings = (userId: string) => RANKINGS.filter(r => r.userId === userId);

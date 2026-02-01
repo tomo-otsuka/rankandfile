@@ -29,6 +29,8 @@ export default function Ranker() {
                     setRankingType={actions.setRankingType}
                     week={state.week}
                     setWeek={actions.setWeek}
+                    isViewMode={state.isViewMode}
+                    availablePositions={state.availablePositions}
                 />
             </div>
 

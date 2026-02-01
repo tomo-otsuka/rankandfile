@@ -5,6 +5,7 @@ import Ranker from './pages/Ranker';
 import Dashboard from './pages/Dashboard';
 import Leagues from './pages/Leagues';
 import Compare from './pages/Compare';
+import PlayerPage from './pages/PlayerPage';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/rank" element={<Ranker />} />
                     <Route path="/rank/:rankId" element={<Ranker />} />
+                    <Route path="/player/:playerId" element={<PlayerPage />} />
 
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/leagues" element={<Leagues />} />
