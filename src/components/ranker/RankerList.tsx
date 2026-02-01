@@ -104,14 +104,14 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                             {/* Stat Pills */}
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/20 border border-white/5 backdrop-blur-md">
-                                    <Target className="w-4 h-4 text-green-400" />
+                                    <Target className="w-4 h-4 text-yellow-400" />
                                     <div className="flex flex-col">
                                         <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Perfect</span>
                                         <span className="text-sm font-black text-white leading-none">{metrics.perfects}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/20 border border-white/5 backdrop-blur-md">
-                                    <Zap className="w-4 h-4 text-yellow-400" />
+                                    <Zap className="w-4 h-4 text-emerald-400" />
                                     <div className="flex flex-col">
                                         <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Close</span>
                                         <span className="text-sm font-black text-white leading-none">{metrics.closeCalls}</span>
@@ -166,16 +166,16 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                                 }}
                                 onClick={(e) => handlePlayerClick(item.id, e)}
                                 className={cn(
-                                    "relative flex flex-col py-2 px-3 rounded-xl border transition-colors select-none group cursor-pointer",
+                                    "relative flex flex-col py-2 px-3 rounded-xl border transition-all duration-300 select-none group cursor-pointer",
                                     !isDragDisabled && "hover:bg-white/10",
                                     // Default styles
                                     !isExpanded && !isPerfectMatch && !isClose && "bg-white/5 border-white/5",
                                     // Expanded style
                                     isExpanded && "bg-white/[0.07] border-primary/20",
-                                    // Perfect Match Style (Green Glow)
-                                    !isExpanded && isPerfectMatch && "bg-green-500/10 border-green-500/50 shadow-[0_0_15px_rgba(74,222,128,0.1)]",
-                                    // Close Call Style (Yellow/Subtle)
-                                    !isExpanded && isClose && "bg-yellow-500/5 border-yellow-500/30"
+                                    // Perfect Match Style (Gold/Premium Glow)
+                                    !isExpanded && isPerfectMatch && "bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-transparent border-yellow-500/40 shadow-[0_0_20px_rgba(234,179,8,0.1)]",
+                                    // Close Call Style (Emerald/Green)
+                                    !isExpanded && isClose && "bg-emerald-500/10 border-emerald-500/30"
                                 )}
                             >
                                 {/* Main Row */}
