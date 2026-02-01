@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FileText, BarChart2, Users, TrendingUp } from 'lucide-react';
+import { FileText, BarChart2, Users, TrendingUp, LayoutDashboard } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 
@@ -7,10 +7,11 @@ export function Navbar() {
     const location = useLocation();
 
     const navItems = [
-        { path: '/rank', label: 'My Rankings', icon: FileText },
-        { path: '/dashboard', label: 'Global', icon: BarChart2 },
+        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/rank', label: 'Rankings', icon: FileText },
+        { path: '/leaderboard', label: 'Global', icon: BarChart2 },
         { path: '/compare', label: 'Compare', icon: TrendingUp },
-        { path: '/leagues', label: 'My Leagues', icon: Users },
+        { path: '/leagues', label: 'Leagues', icon: Users },
     ];
 
     return (

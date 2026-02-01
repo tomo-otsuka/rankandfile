@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import Home from './pages/Home';
 import Ranker from './pages/Ranker';
+import GlobalLeaderboard from './pages/GlobalLeaderboard';
 import Dashboard from './pages/Dashboard';
 import Leagues from './pages/Leagues';
 import Compare from './pages/Compare';
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/player/:playerId" element={<PlayerPage />} />
 
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/leaderboard" element={<GlobalLeaderboard />} />
                     <Route path="/leagues" element={<Leagues />} />
                     <Route path="/leagues/:leagueId" element={<Leagues />} />
                     <Route path="/compare" element={<Compare />} />
