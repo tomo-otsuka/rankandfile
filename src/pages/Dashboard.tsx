@@ -166,7 +166,7 @@ export default function Dashboard() {
                                 <Zap className="w-6 h-6" />
                             </div>
                             <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Compare Tool</h3>
-                            <p className="text-sm text-muted-foreground mt-2">Analyze your mock drafts against the consensus.</p>
+                            <p className="text-sm text-muted-foreground mt-2">Analyze your rankings against the consensus.</p>
                         </div>
 
                         <div className="mt-auto">
