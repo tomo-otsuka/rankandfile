@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Trophy, Flame } from 'lucide-react';
+import { Trophy, Flame, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { PositionPills } from '../components/dashboard/LeaderboardFilters';
 import { LeaderboardList } from '../components/dashboard/LeaderboardList';
@@ -11,12 +12,28 @@ export default function Dashboard() {
         <motion.div
             className="max-w-7xl mx-auto space-y-8 pb-20 px-4 md:px-8"
         >
-            <div className="flex flex-col gap-4 pt-6 pb-2 items-center text-center">
-                <div className="space-y-2 max-w-3xl">
-                    <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white">
-                        Global Accuracy Leaderboard
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-10 pb-2">
+                <div className="space-y-2">
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white uppercase italic">
+                        Global <span className="text-primary/80">Leaderboard</span>
                     </h2>
+                    <p className="text-muted-foreground text-lg max-w-xl">
+                        The ultimate destination for proven accuracy. Compare your rank against the best in the business.
+                    </p>
                 </div>
+
+                <Link
+                    to="/compare"
+                    className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/20 transition-all group shrink-0"
+                >
+                    <div className="p-2 rounded-xl bg-primary/20 text-primary group-hover:scale-110 transition-transform">
+                        <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                        <div className="text-xs font-black uppercase tracking-widest text-primary/60">Tooling</div>
+                        <div className="text-sm font-bold text-white uppercase tracking-tight italic">Compare vs Experts</div>
+                    </div>
+                </Link>
             </div>
 
             {/* Global Position Filter */}
