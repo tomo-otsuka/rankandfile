@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Reorder, AnimatePresence } from 'framer-motion';
-import { GripVertical, ChevronDown, CheckCircle2, TrendingUp, TrendingDown, Crown } from 'lucide-react';
+import { GripVertical, ChevronDown, CheckCircle2, TrendingUp, TrendingDown, Crown, Target, Zap, Trophy } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Player, getWeeklyReality } from '../../services/mockData';
 import { RankingType } from '../../hooks/useRanker';
@@ -23,16 +23,41 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
     const shouldAnimate = useInitialAnimation(600);
 
     // Determine if we are viewing a past week's results
-    // Results are available if it's a Weekly ranking and the week is in the past
     const isResultsMode = rankingType === 'WEEKLY' && currentWeek < MOCK_CURRENT_WEEK;
-
-    // In results mode, drag is disabled (read-only final results)
     const isDragDisabled = isViewMode || isResultsMode;
 
     const weeklyRealityIds = useMemo(() => {
         if (!isResultsMode || items.length === 0) return [];
         return getWeeklyReality(items[0].position, currentWeek);
     }, [isResultsMode, items, currentWeek]);
+
+    // Calculate Performance Metrics
+    const metrics = useMemo(() => {
+        if (!isResultsMode || items.length === 0 || weeklyRealityIds.length === 0) return null;
+
+        let totalDiff = 0;
+        let perfects = 0;
+        let closeCalls = 0; // within 3 spots
+
+        items.forEach((item, index) => {
+            const actualRank = weeklyRealityIds.indexOf(item.id);
+            if (actualRank !== -1) {
+                const diff = Math.abs(index - actualRank);
+                totalDiff += diff;
+                if (diff === 0) perfects++;
+                if (diff <= 3) closeCalls++;
+            } else {
+                // Penalty for unranked player?
+                totalDiff += 20;
+            }
+        });
+
+        const avgDiff = totalDiff / items.length;
+        // Mock accuracy score algorithm
+        const score = Math.max(0, Math.round(100 - (avgDiff * 2.5)));
+
+        return { score, perfects, closeCalls };
+    }, [isResultsMode, items, weeklyRealityIds]);
 
     const handlePlayerClick = (playerId: string, e: React.MouseEvent) => {
         // Don't expand if clicking the drag handle
@@ -43,11 +68,50 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
     return (
         <div className="glass-morphism-premium rounded-2xl overflow-hidden p-2">
 
-            {/* Results Header */}
-            {isResultsMode && (
-                <div className="flex items-center gap-2 px-4 py-3 mb-2 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-500">
-                    <CheckCircle2 className="w-5 h-5" />
-                    <span className="font-bold text-sm uppercase tracking-wider">Results Finalized • Week {currentWeek}</span>
+            {/* Results Header / Performance Summary */}
+            {isResultsMode && metrics && (
+                <div className="mb-4">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-500/20 via-orange-500/10 to-transparent border border-yellow-500/20 p-4">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <Trophy className="w-24 h-24 text-yellow-500" />
+                        </div>
+
+                        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+
+                            {/* Score Block */}
+                            <div className="flex items-center gap-4">
+                                <div className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-600 text-black shadow-lg shadow-orange-500/20">
+                                    <span className="text-3xl font-black leading-none tracking-tighter">{metrics.score}</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-80">Score</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-white italic uppercase tracking-tighter flex items-center gap-2">
+                                        Week {currentWeek} Results
+                                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                                    </h3>
+                                    <p className="text-xs text-yellow-500/80 font-medium">Finalized & Verified</p>
+                                </div>
+                            </div>
+
+                            {/* Stat Pills */}
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/20 border border-white/5 backdrop-blur-md">
+                                    <Target className="w-4 h-4 text-green-400" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Perfect</span>
+                                        <span className="text-sm font-black text-white leading-none">{metrics.perfects}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/20 border border-white/5 backdrop-blur-md">
+                                    <Zap className="w-4 h-4 text-yellow-400" />
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Close</span>
+                                        <span className="text-sm font-black text-white leading-none">{metrics.closeCalls}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -66,18 +130,17 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                         const actualRank = isResultsMode ? weeklyRealityIds.indexOf(item.id) : -1;
                         const showResult = isResultsMode && actualScore !== undefined && actualRank !== -1;
 
-                        // Diff: My Rank (index) vs Actual Rank (actualRank)
-                        // If I ranked #1 (index 0) and they were #5 (actual 4). Error is 4.
-                        // If I ranked #5 (index 4) and they were #1 (actual 0). Error is 4.
+                        // Diff logic
                         let rankDiff = 0;
+                        // wait, actualRank is 0-indexed. index is 0-indexed.
+                        // if actualRank === index, diff is 0.
+
                         if (showResult) {
-                            rankDiff = (index) - (actualRank); // Negative means I ranked them 'Higher' (better) than they were? No.
-                            // index=0 (me), actual=4. diff = -4. I was "Over" confident?
-                            // Let's use standard: Actual Rank - My Rank
-                            // actual=4 (#5), me=0 (#1). diff = 4. 
-                            // actual=0 (#1), me=4 (#5). diff = -4.
+                            rankDiff = (index) - (actualRank);
                         }
-                        // Let's just show absolute error or "Actual Rank #X"
+
+                        const isClose = showResult && Math.abs(rankDiff) <= 3 && Math.abs(rankDiff) > 0;
+                        const isPerfectMatch = showResult && rankDiff === 0;
 
                         return (
                             <Reorder.Item
@@ -95,9 +158,16 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
                                 }}
                                 onClick={(e) => handlePlayerClick(item.id, e)}
                                 className={cn(
-                                    "relative flex flex-col py-2 px-3 rounded-xl bg-white/5 border border-white/5 transition-colors select-none group cursor-pointer",
+                                    "relative flex flex-col py-2 px-3 rounded-xl border transition-colors select-none group cursor-pointer",
                                     !isDragDisabled && "hover:bg-white/10",
-                                    isExpanded && "bg-white/[0.07] border-primary/20"
+                                    // Default styles
+                                    !isExpanded && !isPerfectMatch && !isClose && "bg-white/5 border-white/5",
+                                    // Expanded style
+                                    isExpanded && "bg-white/[0.07] border-primary/20",
+                                    // Perfect Match Style (Green Glow)
+                                    !isExpanded && isPerfectMatch && "bg-green-500/10 border-green-500/50 shadow-[0_0_15px_rgba(74,222,128,0.1)]",
+                                    // Close Call Style (Yellow/Subtle)
+                                    !isExpanded && isClose && "bg-yellow-500/5 border-yellow-500/30"
                                 )}
                             >
                                 {/* Main Row */}
