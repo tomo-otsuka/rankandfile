@@ -35,7 +35,7 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
     const metrics = useMemo(() => {
         if (!isResultsMode || items.length === 0 || weeklyRealityIds.length === 0) return null;
 
-        let totalDiff = 0;
+        let totalWeightedDiff = 0;
         let perfects = 0;
         let closeCalls = 0; // within 3 spots
 
@@ -43,18 +43,26 @@ export function RankerList({ items, handleReorder, isViewMode, currentWeek, rank
             const actualRank = weeklyRealityIds.indexOf(item.id);
             if (actualRank !== -1) {
                 const diff = Math.abs(index - actualRank);
-                totalDiff += diff;
+
+                // Weight top picks more heavily (Standard accuracy practice)
+                // A miss on your #1 pick hurts more than a miss on your #50 pick.
+                let weight = 1.0;
+                if (index < 10) weight = 2.0;       // Top 10 predictions count double
+                else if (index < 20) weight = 1.5;  // Top 20 counts 1.5x
+
+                totalWeightedDiff += (diff * weight);
+
                 if (diff === 0) perfects++;
                 if (diff <= 3) closeCalls++;
             } else {
-                // Penalty for unranked player?
-                totalDiff += 20;
+                // Penalty for unranked player
+                totalWeightedDiff += 30;
             }
         });
 
-        const avgDiff = totalDiff / items.length;
-        // Mock accuracy score algorithm
-        const score = Math.max(0, Math.round(100 - (avgDiff * 2.5)));
+        const avgWeightedDiff = totalWeightedDiff / items.length;
+        // Adjusted formula to account for higher weighted diffs
+        const score = Math.max(0, Math.round(100 - (avgWeightedDiff * 1.8)));
 
         return { score, perfects, closeCalls };
     }, [isResultsMode, items, weeklyRealityIds]);
