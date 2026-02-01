@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParams } from 'react-router-dom';
 import { LeagueList, LeagueDetail } from '../components/dashboard/LeagueComponents';
-import { League } from '../services/mockData';
+import { LEAGUES } from '../services/mockData';
 
 export default function Leagues() {
-    const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
+    const { leagueId } = useParams();
+    const selectedLeague = leagueId ? LEAGUES.find(l => l.id === leagueId) : null;
 
     return (
         <motion.div
@@ -32,7 +33,7 @@ export default function Leagues() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                     >
-                        <LeagueDetail league={selectedLeague} onBack={() => setSelectedLeague(null)} />
+                        <LeagueDetail league={selectedLeague} />
                     </motion.div>
                 ) : (
                     <motion.div
@@ -41,7 +42,7 @@ export default function Leagues() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                     >
-                        <LeagueList onSelectLeague={setSelectedLeague} />
+                        <LeagueList />
                     </motion.div>
                 )}
             </AnimatePresence>

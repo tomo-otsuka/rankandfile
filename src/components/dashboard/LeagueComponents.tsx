@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion';
 import { Trophy, Users, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { LEAGUES, League } from '../../services/mockData';
 import { LeaderboardList } from './LeaderboardList';
 import { useLeaderboard } from '../../hooks/useLeaderboard';
 
 interface LeagueListProps {
-    onSelectLeague: (league: League) => void;
+    // Removed onSelectLeague
 }
 
-export function LeagueList({ onSelectLeague }: LeagueListProps) {
+export function LeagueList({ }: LeagueListProps) {
     // In a real app, filtering would happen based on the logged-in user context
     // For mock, we'll just show all leagues
     const myLeagues = LEAGUES;
@@ -16,31 +17,35 @@ export function LeagueList({ onSelectLeague }: LeagueListProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {myLeagues.map((league) => (
-                <motion.button
+                <Link
                     key={league.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => onSelectLeague(league)}
-                    className="group relative flex items-center gap-6 bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 transition-all text-left w-full"
+                    to={`/leagues/${league.id}`}
+                    className="group"
                 >
-                    <div className={`w-16 h-16 rounded-2xl ${league.avatar} flex items-center justify-center shadow-lg group-hover:shadow-primary/20 transition-all`}>
-                        <Trophy className="w-8 h-8 text-white" />
-                    </div>
-
-                    <div className="flex-1 space-y-1">
-                        <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                            {league.name}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Users className="w-4 h-4" />
-                            <span>{league.memberIds.length} Members</span>
+                    <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="relative flex items-center gap-6 bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 transition-all text-left w-full"
+                    >
+                        <div className={`w-16 h-16 rounded-2xl ${league.avatar} flex items-center justify-center shadow-lg group-hover:shadow-primary/20 transition-all`}>
+                            <Trophy className="w-8 h-8 text-white" />
                         </div>
-                    </div>
 
-                    <div className="p-2 rounded-full bg-white/5 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                        <ChevronRight className="w-5 h-5" />
-                    </div>
-                </motion.button>
+                        <div className="flex-1 space-y-1">
+                            <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
+                                {league.name}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Users className="w-4 h-4" />
+                                <span>{league.memberIds.length} Members</span>
+                            </div>
+                        </div>
+
+                        <div className="p-2 rounded-full bg-white/5 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                            <ChevronRight className="w-5 h-5" />
+                        </div>
+                    </motion.div>
+                </Link>
             ))}
         </div>
     );
@@ -48,10 +53,10 @@ export function LeagueList({ onSelectLeague }: LeagueListProps) {
 
 interface LeagueDetailProps {
     league: League;
-    onBack: () => void;
+    // Removed onBack
 }
 
-export function LeagueDetail({ league, onBack }: LeagueDetailProps) {
+export function LeagueDetail({ league }: LeagueDetailProps) {
     const { helpers } = useLeaderboard();
 
     // Custom helper to get rankings ONLY for league members
@@ -62,13 +67,13 @@ export function LeagueDetail({ league, onBack }: LeagueDetailProps) {
 
     return (
         <div className="space-y-6">
-            <button
-                onClick={onBack}
+            <Link
+                to="/leagues"
                 className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors text-xs font-bold uppercase tracking-wider"
             >
                 <ChevronRight className="w-3 h-3 rotate-180" />
                 Back to Leagues
-            </button>
+            </Link>
 
             <div className="flex items-center gap-4 pb-4 border-b border-white/10">
                 <div className={`w-16 h-16 rounded-2xl ${league.avatar} flex items-center justify-center shadow-2xl`}>

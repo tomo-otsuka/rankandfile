@@ -19,6 +19,7 @@ function App() {
 
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/leagues" element={<Leagues />} />
+                    <Route path="/leagues/:leagueId" element={<Leagues />} />
                     <Route path="/compare" element={<Compare />} />
                 </Route>
             </Routes>
