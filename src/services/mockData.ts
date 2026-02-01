@@ -406,3 +406,17 @@ export const getPlayer = (id: string) => PLAYERS.find(p => p.id === id);
 export const getUser = (id: string) => USERS.find(u => u.id === id);
 export const getRanking = (id: string) => RANKINGS.find(r => r.id === id);
 export const getUserRankings = (userId: string) => RANKINGS.filter(r => r.userId === userId);
+
+export const getReality = (position: Position): string[] => {
+    return PLAYERS
+        .filter(p => p.position === position)
+        .sort((a, b) => (b.currentSeasonAvg || 0) - (a.currentSeasonAvg || 0))
+        .map(p => p.id);
+};
+
+export const getWeeklyReality = (position: Position, week: number): string[] => {
+    return PLAYERS
+        .filter(p => p.position === position)
+        .sort((a, b) => ((b.weeklyScores?.[week] || 0) - (a.weeklyScores?.[week] || 0)))
+        .map(p => p.id);
+};
