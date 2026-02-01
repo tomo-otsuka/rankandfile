@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Users, TrendingUp, TrendingDown, ArrowLeft, Info, Trophy, CheckCircle2, Crown } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, ArrowLeft, Info, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RANKINGS, USERS, getPlayer, Position, getReality } from '../services/mockData';
+import { RANKINGS, USERS, getPlayer, Position } from '../services/mockData';
 import { PositionPills } from '../components/dashboard/LeaderboardFilters';
 import { cn } from '../lib/utils';
 
 export default function Compare() {
     const [selectedPosition, setSelectedPosition] = useState<Position>('WR');
-    const [selectedRivalId, setSelectedRivalId] = useState<string>('REALITY');
+    const [selectedRivalId, setSelectedRivalId] = useState<string>('CONSENSUS');
 
     // Mock "Consensus" Ranking: Average of all researchers
     const consensusRanking = useMemo(() => {
@@ -16,18 +16,6 @@ export default function Compare() {
         if (rankingsWithPos.length === 0) return null;
         const expert = RANKINGS.find(r => r.userId === 'u1' && r.type === 'SEASONAL');
         return expert || rankingsWithPos[0];
-    }, [selectedPosition]);
-
-    // Mock "Reality" Ranking: Based on actual stats
-    const realityRanking = useMemo(() => {
-        const playerIds = getReality(selectedPosition);
-        return {
-            id: 'REALITY',
-            userId: 'REALITY',
-            type: 'SEASONAL',
-            rankings: { [selectedPosition]: playerIds },
-            lastUpdated: new Date().toISOString()
-        };
     }, [selectedPosition]);
 
     // Mock "Me" (using local storage if available, otherwise default)
@@ -52,10 +40,9 @@ export default function Compare() {
     }, [selectedPosition]);
 
     const rivalRanking = useMemo(() => {
-        if (selectedRivalId === 'REALITY') return realityRanking;
         if (selectedRivalId === 'CONSENSUS') return consensusRanking;
         return RANKINGS.find(r => r.id === selectedRivalId);
-    }, [selectedRivalId, consensusRanking, realityRanking]);
+    }, [selectedRivalId, consensusRanking]);
 
     const myPlayerIds = myRanking?.rankings[selectedPosition] || [];
     // Ensure we handle the case where reality might have fewer/more players correctly in a real app
@@ -123,31 +110,6 @@ export default function Compare() {
                                 <Users className="w-3 h-3" /> Compare Against
                             </h3>
                             <div className="grid grid-cols-1 gap-2">
-                                {/* REALITY Button */}
-                                <button
-                                    onClick={() => setSelectedRivalId('REALITY')}
-                                    className={cn(
-                                        "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300",
-                                        selectedRivalId === 'REALITY'
-                                            ? "bg-yellow-500/20 border-yellow-500/40 text-white shadow-[0_0_20px_rgba(234,179,8,0.15)]"
-                                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10 hover:border-white/10"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center text-xl font-bold transition-colors",
-                                            selectedRivalId === 'REALITY' ? "bg-yellow-500 text-black" : "bg-white/5 text-white/20"
-                                        )}>
-                                            <Crown className="w-5 h-5" />
-                                        </div>
-                                        <div className="text-left">
-                                            <div className={cn("font-bold text-sm", selectedRivalId === 'REALITY' ? "text-yellow-400" : "")}>REALITY</div>
-                                            <div className="text-xs opacity-60">Actual Performance</div>
-                                        </div>
-                                    </div>
-                                    {selectedRivalId === 'REALITY' && <CheckCircle2 className="w-5 h-5 text-yellow-500" />}
-                                </button>
-
                                 <button
                                     onClick={() => setSelectedRivalId('CONSENSUS')}
                                     className={cn(
@@ -230,26 +192,16 @@ export default function Compare() {
                             </div>
                             <div className="col-span-5 p-6 bg-white/[0.01]">
                                 <div className="flex items-center gap-3">
-                                    <div className={cn(
-                                        "w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-xs shadow-lg",
-                                        selectedRivalId === 'REALITY' ? "bg-yellow-500 shadow-yellow-500/20 text-black" : "bg-white/10"
-                                    )}>
-                                        {selectedRivalId === 'REALITY' ? <Crown className="w-6 h-6" /> : "VS"}
+                                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg">
+                                        VS
                                     </div>
                                     <div>
-                                        <h4 className={cn(
-                                            "font-black italic uppercase tracking-tighter",
-                                            selectedRivalId === 'REALITY' ? "text-yellow-400" : "text-white"
-                                        )}>
-                                            {selectedRivalId === 'REALITY' ? 'Reality' : 'Rival List'}
+                                        <h4 className="font-black italic uppercase tracking-tighter text-white">
+                                            Rival List
                                         </h4>
-                                        <span className={cn(
-                                            "text-[10px] font-bold uppercase tracking-widest",
-                                            selectedRivalId === 'REALITY' ? "text-yellow-500/60" : "text-muted-foreground"
-                                        )}>
-                                            {selectedRivalId === 'REALITY' ? 'Actual Performance' :
-                                                selectedRivalId === 'CONSENSUS' ? 'Expert Baseline' :
-                                                    `@${USERS.find(u => u.id === rivalRanking?.userId)?.username}`}
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                            {selectedRivalId === 'CONSENSUS' ? 'Expert Baseline' :
+                                                `@${USERS.find(u => u.id === rivalRanking?.userId)?.username}`}
                                         </span>
                                     </div>
                                 </div>
