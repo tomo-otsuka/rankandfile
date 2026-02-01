@@ -114,7 +114,7 @@ export default function Dashboard() {
                                 <Globe className="w-6 h-6" />
                             </div>
                             <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Global Leaderboard</h3>
-                            <p className="text-sm text-muted-foreground mt-2">See where you rank against thousands of other experts.</p>
+                            <p className="text-sm text-muted-foreground mt-2">See where you rank against thousands of other rankers.</p>
                         </div>
 
                         <div className="mt-auto">

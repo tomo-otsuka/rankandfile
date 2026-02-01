@@ -127,7 +127,7 @@ export default function Compare() {
                                             <Trophy className="w-5 h-5" />
                                         </div>
                                         <div className="text-left">
-                                            <div className="font-bold text-sm">Consensus Expert</div>
+                                            <div className="font-bold text-sm">Consensus Benchmark</div>
                                             <div className="text-xs opacity-60">High-accuracy baseline</div>
                                         </div>
                                     </div>
@@ -200,7 +200,7 @@ export default function Compare() {
                                             Rival List
                                         </h4>
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                            {selectedRivalId === 'CONSENSUS' ? 'Expert Baseline' :
+                                            {selectedRivalId === 'CONSENSUS' ? 'Consensus Baseline' :
                                                 `@${USERS.find(u => u.id === rivalRanking?.userId)?.username}`}
                                         </span>
                                     </div>

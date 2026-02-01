@@ -31,7 +31,7 @@ export default function GlobalLeaderboard() {
                     </div>
                     <div className="text-left">
                         <div className="text-xs font-black uppercase tracking-widest text-primary/60">Tooling</div>
-                        <div className="text-sm font-bold text-white uppercase tracking-tight italic">Compare vs Experts</div>
+                        <div className="text-sm font-bold text-white uppercase tracking-tight italic">Compare vs Consensus</div>
                     </div>
                 </Link>
             </div>
