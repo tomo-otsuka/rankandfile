@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Trophy, FileText, BarChart2, Users } from 'lucide-react';
+import { FileText, BarChart2, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 
@@ -7,7 +7,6 @@ export function Navbar() {
     const location = useLocation();
 
     const navItems = [
-        { path: '/', label: 'Home', icon: Trophy },
         { path: '/rank', label: 'My Rankings', icon: FileText },
         { path: '/dashboard', label: 'Global', icon: BarChart2 },
         { path: '/leagues', label: 'My Leagues', icon: Users },
