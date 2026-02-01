@@ -93,7 +93,13 @@ export function useRanker() {
             const saved = localStorage.getItem(key);
 
             if (saved) {
-                setItems(JSON.parse(saved));
+                const savedItems: Player[] = JSON.parse(saved);
+                // Hydrate with latest mock data to ensure historical stats are present
+                const hydratedItems = savedItems.map(savedPlayer => {
+                    const latestPlayer = PLAYERS.find(p => p.id === savedPlayer.id);
+                    return latestPlayer || savedPlayer;
+                });
+                setItems(hydratedItems);
             } else {
                 const playersForPosition = PLAYERS.filter(p => p.position === position);
                 setItems(playersForPosition);
